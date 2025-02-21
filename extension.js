@@ -27,6 +27,9 @@ function activate(context) {
                 `Configurações salvas: Fonte - ${message.font}, Tamanho - ${message.fontSize}, Cor - ${message.color}`
               );
               break;
+            case 'resetToDefault':
+              resetToDefault();
+              break;
           }
         },
         undefined,
@@ -71,6 +74,7 @@ function getWebviewContent() {
     <input type="color" id="color">
 
     <button onclick="saveSettings()">💾 Salvar Configurações</button>
+    <button onclick="resetToDefault()">🔄 Restaurar Padrão</button>
 
     <script>
       const vscode = acquireVsCodeApi();
@@ -85,6 +89,30 @@ function getWebviewContent() {
           font, fontSize, color
         });
       }
+
+      function resetToDefault() {
+        const defaultFont = 'Arial';
+        const defaultFontSize = 14;
+        const defaultColor = '#000000';
+
+        // Atualiza o painel com os valores padrão
+        document.getElementById('font').value = defaultFont;
+        document.getElementById('fontSize').value = defaultFontSize;
+        document.getElementById('color').value = defaultColor;
+
+        // Envia as configurações padrão para o VS Code
+        vscode.postMessage({
+          command: 'saveSettings',
+          font: defaultFont,
+          fontSize: defaultFontSize,
+          color: defaultColor
+        });
+
+        vscode.postMessage({
+          command: 'showInfo',
+          message: 'Configurações restauradas para os padrões.'
+        });
+      }
     </script>
   </body>
   </html>`;
@@ -93,17 +121,41 @@ function getWebviewContent() {
 function saveSettings(font, fontSize, color) {
   const configuration = vscode.workspace.getConfiguration('editor');
 
-  // Salvar configurações
+  // Salvar configurações de fonte e tamanho da fonte
   configuration.update('fontFamily', font, vscode.ConfigurationTarget.Global);
   configuration.update('fontSize', parseInt(fontSize), vscode.ConfigurationTarget.Global);
-  
+
   // Alterar a cor do texto
-  const userSettings = vscode.workspace.getConfiguration('workbench.colorCustomizations');
+  const userSettings = vscode.workspace.getConfiguration('workbench');
   const editorColorSettings = {
-    "editor.foreground": color
+    "colorCustomizations": {
+      "editor.foreground": color
+    }
   };
-  
-  userSettings.update('editor', editorColorSettings, vscode.ConfigurationTarget.Global);
+
+  userSettings.update('colorCustomizations', editorColorSettings.colorCustomizations, vscode.ConfigurationTarget.Global);
+}
+
+function resetToDefault() {
+  const defaultFont = 'Arial';
+  const defaultFontSize = 14;
+  const defaultColor = '#000000';
+
+  // Restaura as configurações para os valores padrão
+  const configuration = vscode.workspace.getConfiguration('editor');
+  configuration.update('fontFamily', defaultFont, vscode.ConfigurationTarget.Global);
+  configuration.update('fontSize', defaultFontSize, vscode.ConfigurationTarget.Global);
+
+  const userSettings = vscode.workspace.getConfiguration('workbench');
+  const editorColorSettings = {
+    "colorCustomizations": {
+      "editor.foreground": defaultColor
+    }
+  };
+
+  userSettings.update('colorCustomizations', editorColorSettings.colorCustomizations, vscode.ConfigurationTarget.Global);
+
+  vscode.window.showInformationMessage('Configurações restauradas para os padrões.');
 }
 
 function deactivate() {}
