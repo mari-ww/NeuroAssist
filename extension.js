@@ -1,4 +1,5 @@
 const vscode = require('vscode');
+const os = require('os');
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -27,8 +28,14 @@ function activate(context) {
                 `Configurações salvas: Fonte - ${message.font}, Tamanho - ${message.fontSize}, Cor - ${message.color}`
               );
               break;
-            case 'resetToDefault':
-              resetToDefault();
+            case 'restoreDefaults':
+              restoreDefaultSettings(panel);
+              break;
+            case 'markText':
+              markText();
+              break;
+            case 'clearMarking':
+              clearMarking();
               break;
           }
         },
@@ -74,7 +81,10 @@ function getWebviewContent() {
     <input type="color" id="color">
 
     <button onclick="saveSettings()">💾 Salvar Configurações</button>
-    <button onclick="resetToDefault()">🔄 Restaurar Padrão</button>
+    <button onclick="restoreDefaults()">🔄 Restaurar para Padrão</button>
+
+    // <button onclick="markText()">✍️ Marcar Código</button>
+    // <button onclick="clearMarking()">🚫 Limpar Marcação</button>
 
     <script>
       const vscode = acquireVsCodeApi();
@@ -90,28 +100,16 @@ function getWebviewContent() {
         });
       }
 
-      function resetToDefault() {
-        const defaultFont = 'Arial';
-        const defaultFontSize = 14;
-        const defaultColor = '#000000';
+      function restoreDefaults() {
+        vscode.postMessage({ command: 'restoreDefaults' });
+      }
 
-        // Atualiza o painel com os valores padrão
-        document.getElementById('font').value = defaultFont;
-        document.getElementById('fontSize').value = defaultFontSize;
-        document.getElementById('color').value = defaultColor;
+      function markText() {
+        vscode.postMessage({ command: 'markText' });
+      }
 
-        // Envia as configurações padrão para o VS Code
-        vscode.postMessage({
-          command: 'saveSettings',
-          font: defaultFont,
-          fontSize: defaultFontSize,
-          color: defaultColor
-        });
-
-        vscode.postMessage({
-          command: 'showInfo',
-          message: 'Configurações restauradas para os padrões.'
-        });
+      function clearMarking() {
+        vscode.postMessage({ command: 'clearMarking' });
       }
     </script>
   </body>
@@ -120,31 +118,104 @@ function getWebviewContent() {
 
 function saveSettings(font, fontSize, color) {
   const configuration = vscode.workspace.getConfiguration('editor');
+  
+  // Detectando sistema operacional
+  const userOS = os.platform();
+  let defaultFont = 'monospace';
+
+  if (userOS === 'win32') {
+    defaultFont = 'Consolas';
+  } else if (userOS === 'darwin') {
+    defaultFont = 'Monaco';
+  } else if (userOS === 'linux') {
+    defaultFont = 'Ubuntu Mono';
+  }
 
   // Salvar configurações de fonte e tamanho da fonte
-  configuration.update('fontFamily', font, vscode.ConfigurationTarget.Global);
+  const fontToUse = font === 'monospace' ? defaultFont : font; // Usa o font se não for "monospace"
+  configuration.update('fontFamily', fontToUse, vscode.ConfigurationTarget.Global);
   configuration.update('fontSize', parseInt(fontSize), vscode.ConfigurationTarget.Global);
 
-  // Alterar a cor do texto
+  // Atualizar a cor do texto com base na escolha do usuário
   const userSettings = vscode.workspace.getConfiguration('workbench');
   const editorColorSettings = {
     "colorCustomizations": {
-      "editor.foreground": color
+      "editor.foreground": color // Usar a cor fornecida diretamente
     }
   };
 
   userSettings.update('colorCustomizations', editorColorSettings.colorCustomizations, vscode.ConfigurationTarget.Global);
 }
 
-function resetToDefault() {
-  const defaultFont = 'Arial';
-  const defaultFontSize = 14;
-  const defaultColor = '#000000';
+// function markText() {
+//   vscode.window.showInformationMessage("Por favor, selecione o texto que você quer marcar.");
 
-  // Restaura as configurações para os valores padrão
+//   const editor = vscode.window.activeTextEditor;
+//   if (editor) {
+//     const selection = editor.selection;
+//     if (selection.isEmpty) {
+//       vscode.window.showInformationMessage("Por favor, selecione um trecho de código.");
+//       return;
+//     }
+
+//     editor.setDecorations(createMarkingDecoration(), [selection]);
+//   }
+// }
+
+// function clearMarking() {
+//   vscode.window.showInformationMessage("Por favor, selecione o texto que você quer desmarcar.");
+
+//   const editor = vscode.window.activeTextEditor;
+//   if (editor) {
+//     const selection = editor.selection;
+//     if (selection.isEmpty) {
+//       vscode.window.showInformationMessage("Por favor, selecione um trecho de código.");
+//       return;
+//     }
+
+//     // Limpa todas as decorações para o editor ativo
+//     editor.setDecorations(createMarkingDecoration(), []);
+//   }
+// }
+
+
+// function createMarkingDecoration() {
+//   return vscode.window.createTextEditorDecorationType({
+//     backgroundColor: 'rgba(255, 255, 0, 0.3)', // Cor de marcação (amarelo)
+//     isWholeLine: false,
+//   });
+// }
+
+// function createClearDecoration() {
+//   return vscode.window.createTextEditorDecorationType({
+//     backgroundColor: 'transparent', // Remove a marcação
+//   });
+// }
+
+function restoreDefaultSettings(panel) {
+  // Restaurar as configurações para os valores padrão
   const configuration = vscode.workspace.getConfiguration('editor');
+  const userOS = os.platform();
+  let defaultFont = 'monospace';
+
+  if (userOS === 'win32') {
+    defaultFont = 'Consolas';
+  } else if (userOS === 'darwin') {
+    defaultFont = 'Monaco';
+  } else if (userOS === 'linux') {
+    defaultFont = 'Ubuntu Mono';
+  }
+
   configuration.update('fontFamily', defaultFont, vscode.ConfigurationTarget.Global);
-  configuration.update('fontSize', defaultFontSize, vscode.ConfigurationTarget.Global);
+  configuration.update('fontSize', 14, vscode.ConfigurationTarget.Global);
+
+  // Detectar o tema e restaurar a cor para a configuração padrão
+  const theme = vscode.workspace.getConfiguration('workbench').get('colorTheme');
+  let defaultColor = '#ffffff'; // Cor padrão (escuro) para o tema claro
+  
+  if (theme && theme.toLowerCase().includes('dark')) {
+    defaultColor = '#000000'; // Cor padrão (claro) para o tema escuro
+  }
 
   const userSettings = vscode.workspace.getConfiguration('workbench');
   const editorColorSettings = {
@@ -155,7 +226,13 @@ function resetToDefault() {
 
   userSettings.update('colorCustomizations', editorColorSettings.colorCustomizations, vscode.ConfigurationTarget.Global);
 
-  vscode.window.showInformationMessage('Configurações restauradas para os padrões.');
+  // Atualizar os campos no painel
+  panel.webview.postMessage({
+    command: 'restoreDefaults',
+    font: defaultFont,
+    fontSize: 14,
+    color: defaultColor,
+  });
 }
 
 function deactivate() {}
