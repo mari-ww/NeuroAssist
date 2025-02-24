@@ -1,6 +1,8 @@
 const vscode = require('vscode');
 const os = require('os');
 
+let currentDecoration = null;
+
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -82,9 +84,8 @@ function getWebviewContent() {
 
     <button onclick="saveSettings()">💾 Salvar Configurações</button>
     <button onclick="restoreDefaults()">🔄 Restaurar para Padrão</button>
-
-    // <button onclick="markText()">✍️ Marcar Código</button>
-    // <button onclick="clearMarking()">🚫 Limpar Marcação</button>
+    <button onclick="markText()">✍️ Marcar Código</button>
+    <button onclick="clearMarking()">🚫 Limpar Marcação</button>
 
     <script>
       const vscode = acquireVsCodeApi();
@@ -119,7 +120,6 @@ function getWebviewContent() {
 function saveSettings(font, fontSize, color) {
   const configuration = vscode.workspace.getConfiguration('editor');
   
-  // Detectando sistema operacional
   const userOS = os.platform();
   let defaultFont = 'monospace';
 
@@ -131,69 +131,59 @@ function saveSettings(font, fontSize, color) {
     defaultFont = 'Ubuntu Mono';
   }
 
-  // Salvar configurações de fonte e tamanho da fonte
-  const fontToUse = font === 'monospace' ? defaultFont : font; // Usa o font se não for "monospace"
+  const fontToUse = font === 'monospace' ? defaultFont : font; 
   configuration.update('fontFamily', fontToUse, vscode.ConfigurationTarget.Global);
   configuration.update('fontSize', parseInt(fontSize), vscode.ConfigurationTarget.Global);
 
-  // Atualizar a cor do texto com base na escolha do usuário
   const userSettings = vscode.workspace.getConfiguration('workbench');
   const editorColorSettings = {
     "colorCustomizations": {
-      "editor.foreground": color // Usar a cor fornecida diretamente
+      "editor.foreground": color 
     }
   };
 
   userSettings.update('colorCustomizations', editorColorSettings.colorCustomizations, vscode.ConfigurationTarget.Global);
 }
 
-// function markText() {
-//   vscode.window.showInformationMessage("Por favor, selecione o texto que você quer marcar.");
+function markText() {
+  const editor = vscode.window.activeTextEditor;
+  if (editor) {
+    const selection = editor.selection;
+    if (selection.isEmpty) {
+      vscode.window.showInformationMessage("Por favor, selecione um trecho de código.");
+      return;
+    }
 
-//   const editor = vscode.window.activeTextEditor;
-//   if (editor) {
-//     const selection = editor.selection;
-//     if (selection.isEmpty) {
-//       vscode.window.showInformationMessage("Por favor, selecione um trecho de código.");
-//       return;
-//     }
+ 
+    const decorationType = createMarkingDecoration();
+    editor.setDecorations(decorationType, [selection]);
+    currentDecoration = decorationType;
 
-//     editor.setDecorations(createMarkingDecoration(), [selection]);
-//   }
-// }
-
-// function clearMarking() {
-//   vscode.window.showInformationMessage("Por favor, selecione o texto que você quer desmarcar.");
-
-//   const editor = vscode.window.activeTextEditor;
-//   if (editor) {
-//     const selection = editor.selection;
-//     if (selection.isEmpty) {
-//       vscode.window.showInformationMessage("Por favor, selecione um trecho de código.");
-//       return;
-//     }
-
-//     // Limpa todas as decorações para o editor ativo
-//     editor.setDecorations(createMarkingDecoration(), []);
-//   }
-// }
+    vscode.window.showInformationMessage("Texto marcado.");
+  }
+}
 
 
-// function createMarkingDecoration() {
-//   return vscode.window.createTextEditorDecorationType({
-//     backgroundColor: 'rgba(255, 255, 0, 0.3)', // Cor de marcação (amarelo)
-//     isWholeLine: false,
-//   });
-// }
+function clearMarking() {
+  const editor = vscode.window.activeTextEditor;
+  if (editor && currentDecoration) {
+    editor.setDecorations(currentDecoration, []); 
+    currentDecoration.dispose(); 
+    currentDecoration = null; 
+    vscode.window.showInformationMessage("Marcação removida.");
+  } else {
+    vscode.window.showInformationMessage("Nenhuma marcação encontrada para remover.");
+  }
+}
 
-// function createClearDecoration() {
-//   return vscode.window.createTextEditorDecorationType({
-//     backgroundColor: 'transparent', // Remove a marcação
-//   });
-// }
+function createMarkingDecoration() {
+  return vscode.window.createTextEditorDecorationType({
+    backgroundColor: 'rgba(255, 255, 0, 0.3)', // Cor de marcação (amarelo)
+    isWholeLine: false,
+  });
+}
 
 function restoreDefaultSettings(panel) {
-  // Restaurar as configurações para os valores padrão
   const configuration = vscode.workspace.getConfiguration('editor');
   const userOS = os.platform();
   let defaultFont = 'monospace';
@@ -209,12 +199,11 @@ function restoreDefaultSettings(panel) {
   configuration.update('fontFamily', defaultFont, vscode.ConfigurationTarget.Global);
   configuration.update('fontSize', 14, vscode.ConfigurationTarget.Global);
 
-  // Detectar o tema e restaurar a cor para a configuração padrão
   const theme = vscode.workspace.getConfiguration('workbench').get('colorTheme');
-  let defaultColor = '#ffffff'; // Cor padrão (escuro) para o tema claro
+  let defaultColor = '#ffffff'; 
   
   if (theme && theme.toLowerCase().includes('dark')) {
-    defaultColor = '#000000'; // Cor padrão (claro) para o tema escuro
+    defaultColor = '#000000'; 
   }
 
   const userSettings = vscode.workspace.getConfiguration('workbench');
@@ -226,7 +215,6 @@ function restoreDefaultSettings(panel) {
 
   userSettings.update('colorCustomizations', editorColorSettings.colorCustomizations, vscode.ConfigurationTarget.Global);
 
-  // Atualizar os campos no painel
   panel.webview.postMessage({
     command: 'restoreDefaults',
     font: defaultFont,
