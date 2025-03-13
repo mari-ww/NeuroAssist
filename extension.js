@@ -58,7 +58,21 @@ function getWebviewContent() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações Visuais</title>
     <style>
-      body { font-family: Arial, sans-serif; padding: 20px; }
+      @font-face {
+          font-family: 'Lexend';
+          src: url('vscode-resource:/fonts/Lexend-Regular.ttf') format('truetype');
+      }
+
+      @font-face {
+          font-family: 'OpenDyslexic';
+          src: url('vscode-resource:/fonts/OpenDyslexic-Regular.otf') format('opentype');
+      }
+
+      body {
+          font-family: 'Lexend', sans-serif;
+          padding: 20px;
+      }
+
       label { display: block; margin: 10px 0 5px; }
       input, select { width: 100%; padding: 5px; }
       button { margin-top: 10px; padding: 10px; cursor: pointer; }
@@ -69,11 +83,11 @@ function getWebviewContent() {
 
     <label for="font">📄 Fonte:</label>
     <select id="font">
+      <option value="Lexend">Lexend</option>
+      <option value="OpenDyslexic">OpenDyslexic</option>
       <option value="Arial">Arial</option>
       <option value="Verdana">Verdana</option>
       <option value="Tahoma">Tahoma</option>
-      <option value="Lexend">Lexend</option>
-      <option value="OpenDyslexic">OpenDyslexic</option>
     </select>
 
     <label for="fontSize">🔡 Tamanho da Fonte:</label>
@@ -94,6 +108,11 @@ function getWebviewContent() {
         const font = document.getElementById('font').value;
         const fontSize = document.getElementById('fontSize').value;
         const color = document.getElementById('color').value;
+
+        // Aplica as mudanças imediatamente na WebView
+        document.body.style.fontFamily = font;
+        document.body.style.fontSize = fontSize + 'px';
+        document.body.style.color = color;
 
         vscode.postMessage({
           command: 'saveSettings',
@@ -121,7 +140,7 @@ function saveSettings(font, fontSize, color) {
   const configuration = vscode.workspace.getConfiguration('editor');
   
   const userOS = os.platform();
-  let defaultFont = 'monospace';
+  let defaultFont = 'Consolas';
 
   if (userOS === 'win32') {
     defaultFont = 'Consolas';
@@ -197,7 +216,7 @@ function restoreDefaultSettings(panel) {
   }
 
   configuration.update('fontFamily', defaultFont, vscode.ConfigurationTarget.Global);
-  configuration.update('fontSize', 14, vscode.ConfigurationTarget.Global);
+  configuration.update('fontSize', 18, vscode.ConfigurationTarget.Global);
 
   const theme = vscode.workspace.getConfiguration('workbench').get('colorTheme');
   let defaultColor = '#ffffff'; 
