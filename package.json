@@ -16,14 +16,36 @@
       {
         "command": "dislexia.showSettingsPanel",
         "title": "Abrir Configurações Visuais"
+      },
+      {
+        "command": "dislexia.toggleFocusMode",
+        "title": "Alternar Modo de Leitura Aprimorado"
       }
     ],
+    "keybindings": [
+    {
+      "command": "dislexia.showSettingsPanel",
+      "key": "ctrl+alt+s",
+      "when": "editorTextFocus"
+    },
+    {
+      "command": "dislexia.toggleFocusMode",
+      "key": "ctrl+alt+f",
+      "when": "editorTextFocus"
+    }
+  ],
     "configuration": {
       "type": "object",
       "properties": {
+        "dislexia.focusModeBackground": {
+        "type": "string",
+        "default": "rgba(0, 0, 0, 0.7)",
+        "description": "Cor do fundo ao ativar o Modo de Leitura Aprimorado."
+        },
         "dislexia.font": {
           "type": "string",
-          "default": "Arial",
+          "default": "Lexend",
+          "enum": ["Lexend", "OpenDyslexic"],
           "description": "Fonte utilizada no editor"
         },
         "dislexia.fontSize": {

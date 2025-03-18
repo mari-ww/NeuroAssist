@@ -33,9 +33,6 @@ function getWebviewContent() {
       <select id="font">
         <option value="Lexend">Lexend</option>
         <option value="OpenDyslexic">OpenDyslexic</option>
-        <option value="Arial">Arial</option>
-        <option value="Verdana">Verdana</option>
-        <option value="Tahoma">Tahoma</option>
       </select>
   
       <label for="fontSize">🔡 Tamanho da Fonte:</label>
@@ -54,9 +51,24 @@ function getWebviewContent() {
       <button onclick="restoreDefaults()">🔄 Restaurar para Padrão</button>
       <button onclick="markText()">✍️ Marcar Código</button>
       <button onclick="clearMarking()">🚫 Limpar Marcação</button>
-  
+
       <script>
         const vscode = acquireVsCodeApi();
+
+        window.addEventListener("message", event => {
+          const message = event.data;
+
+          if (message.command === "setTheme") {
+            const theme = message.theme;
+            
+            // Defina a cor do texto baseada no tema
+            if (theme === 2 || theme === 3) { // 2 = Dark, 3 = High Contrast
+              document.body.style.color = "white";
+            } else {
+              document.body.style.color = "black"; // Ou a cor padrão do VS Code
+            }
+          }
+        });
   
         function saveSettings() {
           const font = document.getElementById('font').value;
@@ -98,4 +110,3 @@ function getWebviewContent() {
   }
   
   module.exports = { getWebviewContent };
-  
