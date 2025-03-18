@@ -30,7 +30,7 @@ function saveSettings(font, fontSize, color, letterSpacing, lineHeight) {
     userSettings.update('colorCustomizations', editorColorSettings.colorCustomizations, vscode.ConfigurationTarget.Global);
   }
   
-  // 🛠 Função para verificar se a fonte está instalada
+  // Função para verificar se a fonte está instalada
   function checkFontAvailability(font) {
     if (font === "OpenDyslexic") {
       vscode.window.showWarningMessage(
@@ -91,7 +91,7 @@ function restoreDefaultSettings(panel) {
     configuration.update('letterSpacing', 0, vscode.ConfigurationTarget.Global);
     configuration.update('lineHeight', 1.5, vscode.ConfigurationTarget.Global);
   
-    // 🔥 Detectando o tema do VS Code
+    // Detectando o tema do VS Code
     const theme = vscode.workspace.getConfiguration('workbench').get('colorTheme');
     let defaultColor = undefined; // Se undefined, o VS Code usa a cor padrão do tema
   
@@ -108,7 +108,7 @@ function restoreDefaultSettings(panel) {
   
     userSettings.update('colorCustomizations', editorColorSettings.colorCustomizations, vscode.ConfigurationTarget.Global);
   
-    // 🔄 Envia os valores padrão de volta para o WebView
+    // Envia os valores padrão de volta para o WebView
     panel.webview.postMessage({
       command: 'restoreDefaults',
       font: defaultFont,
