@@ -1,65 +1,73 @@
-# Dislexia README
+# 📖 Extensão VS Code - Dislexia Helper
 
-This is the README for your extension "Dislexia". After writing up a brief description, we recommend including the following sections.
-
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Uma extensão para o VS Code que melhora a acessibilidade do editor para pessoas com dislexia, permitindo personalização da fonte, espaçamento, cor do texto e um modo de leitura aprimorado para facilitar o foco no código.
 
 ---
 
-## Working with Markdown
+## ✨ Funcionalidades
 
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+- 🛠 **Personalização Visual**: Ajuste fonte, tamanho, cor do texto, espaçamento e altura da linha.
+- 🔍 **Modo de Leitura Aprimorado**: Destaca apenas a linha ativa e escurece as demais para aumentar o foco.
+- 📝 **Marcação de Texto**: Permite destacar trechos importantes do código.
+- ♻ **Restauração de Padrões**: Volta para as configurações padrão do VS Code com um clique.
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
+---
 
-## For more information
+## 🚀 Instalação
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/dislexia-helper.git
+   cd Dislexia-master
+   ```
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+3. Abra no VS Code e pressione `F5` para testar a extensão.
 
-**Enjoy!**
+---
+
+## 🖥 Como Usar
+
+### 📌 Abrir o Painel de Configuração:
+- **Atalho:** `Ctrl + Alt + S`
+- **Comando:** `Dislexia: Abrir Configurações Visuais`
+
+### 🎯 Alternar Modo de Leitura Aprimorado:
+- **Atalho:** `Ctrl + Alt + F`
+- **Comando:** `Dislexia: Alternar Modo de Leitura Aprimorado`
+
+### 🔖 Destacar Texto:
+- Selecione um trecho do código e clique em `Dislexia: Marcar Texto`
+- Para remover a marcação, clique em `Dislexia: Limpar Marcação`
+
+### 🔄 Restaurar Configurações Padrão:
+- No painel de configurações, clique em `Restaurar Padrões`
+
+---
+
+## 🔧 Configurações
+
+A extensão permite personalizar algumas opções diretamente no `settings.json`:
+```json
+{
+  "dislexia.focusModeBackground": "rgba(0, 0, 0, 0.7)",
+  "dislexia.font": "Lexend"
+}
+```
+
+---
+
+## 📚 Tecnologias Utilizadas
+
+- **Node.js**
+- **Visual Studio Code API**
+- **JavaScript**
+
+---
+
+## 📜 Licença
+
+Este projeto está sob a licença MIT. Sinta-se à vontade para contribuir! 🎉
+
