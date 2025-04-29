@@ -5,7 +5,6 @@ const { saveSettings, restoreDefaultSettings, markText, clearMarking } = require
 let currentDecoration = null;
 let focusDecoration = null;
 let focusModeActive = false;
-
 /**
  * @param {vscode.ExtensionContext} context
  */

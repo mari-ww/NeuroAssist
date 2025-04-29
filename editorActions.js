@@ -47,6 +47,8 @@ function markText(color = '#ffff00') {
       vscode.window.showInformationMessage("Por favor, selecione um trecho de código.");
       return;
     }
+ }
+    
 
     const decorationType = createMarkingDecoration(color);
     editor.setDecorations(decorationType, [selection]);
@@ -54,17 +56,18 @@ function markText(color = '#ffff00') {
 
     vscode.window.showInformationMessage("Texto marcado.");
   }
-}
-
-function clearMarking() {
-  const editor = vscode.window.activeTextEditor;
-  if (editor && currentDecoration) {
-    editor.setDecorations(currentDecoration, []);
-    currentDecoration.dispose();
-    currentDecoration = null;
-    vscode.window.showInformationMessage("Marcação removida.");
+  
+  function clearMarking() {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+      for (const decoration of currentDecorations) {
+        editor.setDecorations(decoration, []);
+        decoration.dispose();
+      }
+      currentDecorations = []; 
+      vscode.window.showInformationMessage("Todas as marcações foram removidas.");
+    }
   }
-}
 
 function createMarkingDecoration(color) {
   return vscode.window.createTextEditorDecorationType({
