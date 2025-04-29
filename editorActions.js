@@ -1,7 +1,7 @@
 const vscode = require('vscode');
 const os = require('os');
 
-let currentDecoration = null;
+let currentDecorations = [];
 
 function saveSettings(font, fontSize, color, letterSpacing, lineHeight) {
     const configuration = vscode.workspace.getConfiguration('editor');
@@ -39,7 +39,7 @@ function saveSettings(font, fontSize, color, letterSpacing, lineHeight) {
     }
   }  
 
-function markText() {
+function markText(color = '#ffff00') {
   const editor = vscode.window.activeTextEditor;
   if (editor) {
     const selection = editor.selection;
@@ -48,9 +48,9 @@ function markText() {
       return;
     }
 
-    const decorationType = createMarkingDecoration();
+    const decorationType = createMarkingDecoration(color);
     editor.setDecorations(decorationType, [selection]);
-    currentDecoration = decorationType;
+    currentDecorations.push(decorationType);
 
     vscode.window.showInformationMessage("Texto marcado.");
   }
@@ -66,9 +66,9 @@ function clearMarking() {
   }
 }
 
-function createMarkingDecoration() {
+function createMarkingDecoration(color) {
   return vscode.window.createTextEditorDecorationType({
-    backgroundColor: 'rgba(255, 255, 0, 0.3)',
+    backgroundColor: color,
     isWholeLine: false,
   });
 }

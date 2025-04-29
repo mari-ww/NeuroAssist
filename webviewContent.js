@@ -46,10 +46,16 @@ function getWebviewContent() {
       
       <label for="lineHeight">📏 Espaçamento entre linhas:</label>
       <input type="number" id="lineHeight" value="1.5" min="1" max="3" step="0.1">
-  
+
+      <label for="focusOpacity">🌗 Intensidade do Modo Foco:</label>
+      <input type="range" id="focusOpacity" min="0.1" max="1" step="0.05" value="0.7" oninput="updateOpacityLabel(this.value)">
+      <span id="opacityValue">0.7</span>
+
       <button onclick="saveSettings()">💾 Salvar Configurações</button>
       <button onclick="restoreDefaults()">🔄 Restaurar para Padrão</button>
       <button onclick="markText()">✍️ Marcar Código</button>
+      <label for="highlightColor">🖍️ Cor da Marcação:</label>
+      <input type="color" id="highlightColor" value="#ffff00">
       <button onclick="clearMarking()">🚫 Limpar Marcação</button>
 
       <script>
@@ -76,6 +82,7 @@ function getWebviewContent() {
           const color = document.getElementById('color').value;
           const letterSpacing = document.getElementById('letterSpacing').value + 'px';
           const lineHeight = document.getElementById('lineHeight').value;
+          const focusOpacity = document.getElementById('focusOpacity').value;
   
           document.body.style.fontFamily = font;
           document.body.style.fontSize = fontSize + 'px';
@@ -89,8 +96,11 @@ function getWebviewContent() {
             fontSize, 
             color, 
             letterSpacing, 
-            lineHeight
+            lineHeight,
+            focusOpacity
           });
+
+          updateOpacityLabel(focusOpacity);
         }
   
         function restoreDefaults() {
@@ -98,12 +108,22 @@ function getWebviewContent() {
         }
   
         function markText() {
-          vscode.postMessage({ command: 'markText' });
+          const highlightColor = document.getElementById('highlightColor').value;
+          
+          vscode.postMessage({
+          command: 'markText',
+          highlightColor
+        });
         }
   
         function clearMarking() {
           vscode.postMessage({ command: 'clearMarking' });
         }
+        
+        function updateOpacityLabel(value) {
+          document.getElementById('opacityValue').textContent = value;
+        }
+
       </script>
     </body>
     </html>`;

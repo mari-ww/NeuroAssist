@@ -42,6 +42,13 @@
         "default": "rgba(0, 0, 0, 0.7)",
         "description": "Cor do fundo ao ativar o Modo de Leitura Aprimorado."
         },
+        "dislexia.focusModeOpacity": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0.1,
+          "maximum": 1.0,
+          "description": "Opacidade do fundo no Modo de Leitura Aprimorado (0.1 = mais claro, 1.0 = totalmente escuro)."
+        },
         "dislexia.font": {
           "type": "string",
           "default": "Lexend",

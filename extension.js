@@ -46,7 +46,7 @@ function activate(context) {
               restoreDefaultSettings(panel);
               break;
             case 'markText':
-              markText();
+              markText(message.highlightColor || '#ffff00'); // padrão amarelo
               break;
             case 'clearMarking':
               clearMarking();
@@ -94,7 +94,7 @@ function applyFocusMode(editor) {
 
   // Linhas não ativas: fundo preto e texto oculto
   focusDecoration = vscode.window.createTextEditorDecorationType({
-    backgroundColor: 'black', // Fundo preto para as outras linhas
+    backgroundColor:'rgba(0, 0, 0, 0.6)', // Fundo preto para as outras linhas
     color: 'black', // Texto oculto (pretas)
     isWholeLine: true,
   });
@@ -103,28 +103,55 @@ function applyFocusMode(editor) {
   vscode.window.onDidChangeTextEditorSelection(() => updateFocus(editor));
 }
 
+let activeLinesSet = new Set(); // variável global para guardar as linhas visíveis
+
 function updateFocus(editor) {
   if (!focusModeActive) return;
 
   const totalLines = editor.document.lineCount;
-  const activeLine = editor.selection.active.line;
+  const selections = editor.selections;
+
+  // Adiciona novas linhas ativas ao conjunto
+  for (const sel of selections) {
+    for (let i = sel.start.line; i <= sel.end.line; i++) {
+      activeLinesSet.add(i);
+    }
+  }
 
   let decorations = [];
 
-  // Adiciona decoração de fundo preto para as linhas não ativas
   for (let i = 0; i < totalLines; i++) {
-    if (i !== activeLine) {
+    if (!activeLinesSet.has(i)) {
       decorations.push(new vscode.Range(i, 0, i, editor.document.lineAt(i).text.length));
     }
   }
 
-  editor.setDecorations(focusDecoration, decorations); // Aplica a decoração de fundo preto para as linhas não ativas
-  editor.setDecorations(currentDecoration, [new vscode.Range(activeLine, 0, activeLine, editor.document.lineAt(activeLine).text.length)]); // Destaca a linha ativa sem fundo preto
+  // Aplica a decoração escura para linhas fora do foco
+  editor.setDecorations(focusDecoration, decorations);
+
+  // Destaca as linhas visíveis
+  let highlightDecorations = [];
+  for (let line of activeLinesSet) {
+    highlightDecorations.push(new vscode.Range(line, 0, line, editor.document.lineAt(line).text.length));
+  }
+  editor.setDecorations(currentDecoration, highlightDecorations);
 }
 
 function clearFocusMode() {
   if (focusDecoration) {
     focusDecoration.dispose();
     focusDecoration = null;
+  }
+}
+
+function clearFocus(editor) {
+  activeLinesSet.clear();
+
+  if (focusDecoration) {
+    editor.setDecorations(focusDecoration, []);
+  }
+
+  if (currentDecoration) {
+    editor.setDecorations(currentDecoration, []);
   }
 }
