@@ -50,6 +50,9 @@ function getWebviewContent() {
       <button onclick="saveSettings()">💾 Salvar Configurações</button>
       <button onclick="restoreDefaults()">🔄 Restaurar para Padrão</button>
       <button onclick="markText()">✍️ Marcar Código</button>
+      <label for="highlightColor">🖍️ Cor da Marcação:</label>
+      <input type="color" id="highlightColor" value="#ffff00">
+
       <button onclick="clearMarking()">🚫 Limpar Marcação</button>
 
       <script>
@@ -97,10 +100,15 @@ function getWebviewContent() {
           vscode.postMessage({ command: 'restoreDefaults' });
         }
   
-        function markText() {
-          vscode.postMessage({ command: 'markText' });
-        }
-  
+       function markText() {
+  const highlightColor = document.getElementById('highlightColor').value;
+
+  vscode.postMessage({
+    command: 'markText',
+    highlightColor
+  });
+}
+
         function clearMarking() {
           vscode.postMessage({ command: 'clearMarking' });
         }

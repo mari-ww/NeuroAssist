@@ -45,9 +45,10 @@ function activate(context) {
             case 'restoreDefaults':
               restoreDefaultSettings(panel);
               break;
-            case 'markText':
-              markText();
-              break;
+              case 'markText':
+                markText(message.highlightColor || '#ffff00'); // padrão amarelo
+                break;
+              
             case 'clearMarking':
               clearMarking();
               break;

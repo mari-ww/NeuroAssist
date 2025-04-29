@@ -1,7 +1,7 @@
 const vscode = require('vscode');
 const os = require('os');
 
-let currentDecoration = null;
+let currentDecorations = [];
 
 function saveSettings(font, fontSize, color, letterSpacing, lineHeight) {
     const configuration = vscode.workspace.getConfiguration('editor');
@@ -38,40 +38,42 @@ function saveSettings(font, fontSize, color, letterSpacing, lineHeight) {
       );
     }
   }  
-
-function markText() {
-  const editor = vscode.window.activeTextEditor;
-  if (editor) {
-    const selection = editor.selection;
-    if (selection.isEmpty) {
-      vscode.window.showInformationMessage("Por favor, selecione um trecho de código.");
-      return;
+  function markText(color = '#ffff00') {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+      const selection = editor.selection;
+      if (selection.isEmpty) {
+        vscode.window.showInformationMessage("Por favor, selecione um trecho de código.");
+        return;
+      }
+  
+      const decorationType = createMarkingDecoration(color);
+      editor.setDecorations(decorationType, [selection]);
+      currentDecorations.push(decorationType);
+  
+      vscode.window.showInformationMessage("Texto marcado.");
     }
-
-    const decorationType = createMarkingDecoration();
-    editor.setDecorations(decorationType, [selection]);
-    currentDecoration = decorationType;
-
-    vscode.window.showInformationMessage("Texto marcado.");
   }
-}
-
-function clearMarking() {
-  const editor = vscode.window.activeTextEditor;
-  if (editor && currentDecoration) {
-    editor.setDecorations(currentDecoration, []);
-    currentDecoration.dispose();
-    currentDecoration = null;
-    vscode.window.showInformationMessage("Marcação removida.");
+  
+  function clearMarking() {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+      for (const decoration of currentDecorations) {
+        editor.setDecorations(decoration, []);
+        decoration.dispose();
+      }
+      currentDecorations = []; 
+      vscode.window.showInformationMessage("Todas as marcações foram removidas.");
+    }
   }
-}
 
-function createMarkingDecoration() {
-  return vscode.window.createTextEditorDecorationType({
-    backgroundColor: 'rgba(255, 255, 0, 0.3)',
-    isWholeLine: false,
-  });
-}
+  function createMarkingDecoration(color) {
+    return vscode.window.createTextEditorDecorationType({
+      backgroundColor: color,
+      isWholeLine: false,
+    });
+  }
+  
 
 function restoreDefaultSettings(panel) {
     const configuration = vscode.workspace.getConfiguration('editor');
