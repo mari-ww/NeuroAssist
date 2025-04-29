@@ -50,6 +50,10 @@ function activate(context) {
             case 'clearMarking':
               clearMarking();
               break;
+              case 'updateFocusOpacity':
+              updateFocusOpacity(message.focusOpacity);
+              break;
+
           }
         },
         undefined,
@@ -79,6 +83,23 @@ function toggleFocusMode() {
     applyFocusMode(editor);
   }
   focusModeActive = !focusModeActive;
+}
+
+function updateFocusOpacity(opacity) {
+  if (!focusDecoration) return;
+
+  focusDecoration.dispose(); 
+
+  focusDecoration = vscode.window.createTextEditorDecorationType({
+    backgroundColor: `rgba(0, 0, 0, ${opacity})`,
+    color: 'black',
+    isWholeLine: true,
+  });
+
+  const editor = vscode.window.activeTextEditor;
+  if (editor) {
+    updateFocus(editor);
+  }
 }
 
 function applyFocusMode(editor) {

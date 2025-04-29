@@ -48,7 +48,7 @@ function getWebviewContent() {
       <input type="number" id="lineHeight" value="1.5" min="1" max="3" step="0.1">
 
       <label for="focusOpacity">🌗 Intensidade do Modo Foco:</label>
-      <input type="range" id="focusOpacity" min="0.1" max="1" step="0.05" value="0.7" oninput="updateOpacityLabel(this.value)">
+      <input type="range" id="focusOpacity" min="0.1" max="1" step="0.05" value="0.7" oninput="handleOpacityChange(this.value)">
       <span id="opacityValue">0.7</span>
 
       <button onclick="saveSettings()">💾 Salvar Configurações</button>
@@ -106,7 +106,15 @@ function getWebviewContent() {
         function restoreDefaults() {
           vscode.postMessage({ command: 'restoreDefaults' });
         }
-  
+          
+        function handleOpacityChange(value) {
+        updateOpacityLabel(value);
+        vscode.postMessage({
+          command: 'updateFocusOpacity',
+          focusOpacity: value
+        });
+      }
+
         function markText() {
           const highlightColor = document.getElementById('highlightColor').value;
           
