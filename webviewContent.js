@@ -14,41 +14,57 @@ function getWebviewContent(variables = []) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Configurações Visuais</title>
   <style>
-    @font-face {
-      font-family: 'Lexend';
-      src: url('vscode-resource:/fonts/Lexend-Regular.ttf') format('truetype');
-    }
+  @font-face {
+    font-family: 'Lexend';
+    src: url('vscode-resource:/fonts/Lexend-Regular.ttf') format('truetype');
+  }
 
-    @font-face {
-      font-family: 'OpenDyslexic';
-      src: url('vscode-resource:/fonts/OpenDyslexic-Regular.otf') format('opentype');
-    }
+  @font-face {
+    font-family: 'OpenDyslexic';
+    src: url('vscode-resource:/fonts/OpenDyslexic-Regular.otf') format('opentype');
+  }
 
-    body {
-      font-family: 'Lexend', sans-serif;
-      padding: 20px;
-    }
+  body {
+    font-family: 'Lexend', sans-serif;
+    padding: 20px;
+    background-color: inherit;
+    color: inherit;
+  }
 
-    label { display: block; margin: 10px 0 5px; }
-    input, select { width: 100%; padding: 5px; }
-    button { margin-top: 10px; padding: 10px; cursor: pointer; }
+  label, input, select, button, table, th, td {
+    color: inherit;
+    background-color: inherit;
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 30px;
-    }
+  input, select {
+    width: 100%;
+    padding: 5px;
+    background-color: white;
+  }
 
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
+  button {
+    margin-top: 10px;
+    padding: 10px;
+    cursor: pointer;
+  }
 
-    th {
-      background-color: #f4f4f4;
-    }
-  </style>
+  label {
+    display: block;
+    margin: 10px 0 5px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+</style>
 </head>
 <body>
   <h2>⚙️ Configurações Visuais</h2>
