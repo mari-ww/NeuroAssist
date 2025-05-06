@@ -20,6 +20,14 @@
       {
         "command": "dislexia.toggleFocusMode",
         "title": "Alternar Modo de Leitura Aprimorado"
+      },
+      {
+        "command": "dislexia.addVariable",
+        "title": "Dislexia: Adicionar Variável"
+      },
+      {
+        "command": "dislexia.listVariables",
+        "title": "Dislexia: Listar Variáveis"
       }
     ],
     "keybindings": [
