@@ -1,15 +1,25 @@
-# 📖 Extensão VS Code - Dislexia Helper
+# 📖 Dislexia Helper — Extensão para VS Code
 
-Uma extensão para o VS Code que melhora a acessibilidade do editor para pessoas com dislexia, permitindo personalização da fonte, espaçamento, cor do texto e um modo de leitura aprimorado para facilitar o foco no código.
+A **Dislexia Helper** é uma extensão para o Visual Studio Code projetada para tornar o ambiente de programação mais acessível a pessoas com dislexia. Ela permite **personalizações visuais detalhadas**, como escolha de fonte, espaçamento entre letras e linhas, cor do texto e **um modo de foco que melhora a concentração durante a leitura de código**.
 
 ---
 
 ## ✨ Funcionalidades
 
-- 🛠 **Personalização Visual**: Ajuste fonte, tamanho, cor do texto, espaçamento e altura da linha.
-- 🔍 **Modo de Leitura Aprimorado**: Destaca apenas a linha ativa e escurece as demais para aumentar o foco.
-- 📝 **Marcação de Texto**: Permite destacar trechos importantes do código.
-- ♻ **Restauração de Padrões**: Volta para as configurações padrão do VS Code com um clique.
+- 🛠 **Painel de Configuração Visual (WebView)**  
+  Interface intuitiva para customizar fonte, tamanho, cor do texto, espaçamento entre letras e entre linhas, com visualização em tempo real.
+
+- 🌗 **Modo de Leitura Aprimorado (Modo Foco)**  
+  Escurece as demais linhas do editor e realça a linha atual para ajudar na concentração e reduzir distrações.
+
+- 🖍️ **Marcação Personalizada de Código**  
+  Destaque visual de trechos importantes com a cor de sua escolha — configurável diretamente no painel.
+
+- ♻ **Restauração Rápida para Padrões**  
+  Retorne às configurações padrão do VS Code com um clique, mantendo a flexibilidade e controle.
+
+- 📋 **Criação de Variáveis de Acessibilidade**  
+  Armazene configurações e preferências como variáveis reutilizáveis no editor.
 
 ---
 
@@ -18,42 +28,46 @@ Uma extensão para o VS Code que melhora a acessibilidade do editor para pessoas
 1. Clone o repositório:
    ```bash
    git clone https://github.com/seu-usuario/dislexia-helper.git
-   cd Dislexia-master
+   cd dislexia-helper
    ```
+
 2. Instale as dependências:
    ```bash
    npm install
    ```
-3. Abra no VS Code e pressione `F5` para testar a extensão.
+3. Abra o projeto no VS Code e pressione F5 para iniciar a extensão em modo de desenvolvimento.
 
 ---
 
 ## 🖥 Como Usar
 
-### 📌 Abrir o Painel de Configuração:
-- **Atalho:** `Ctrl + Alt + S`
+### ⚙ Abrir Painel de Configurações Visuais
+- **Atalho:** `Ctrl + Alt + S`  
 - **Comando:** `Dislexia: Abrir Configurações Visuais`
 
-### 🎯 Alternar Modo de Leitura Aprimorado:
-- **Atalho:** `Ctrl + Alt + F`
+### 🌙 Ativar/Desativar Modo Foco
+- **Atalho:** `Ctrl + Alt + F`  
 - **Comando:** `Dislexia: Alternar Modo de Leitura Aprimorado`
 
-### 🔖 Destacar Texto:
-- Selecione um trecho do código e clique em `Dislexia: Marcar Texto`
-- Para remover a marcação, clique em `Dislexia: Limpar Marcação`
+### 🖍 Marcar ou Limpar Código
+- Selecione um trecho e execute:
+  - `Dislexia: Marcar Texto` para destacar
+  - `Dislexia: Limpar Marcação` para remover o destaque
 
-### 🔄 Restaurar Configurações Padrão:
-- No painel de configurações, clique em `Restaurar Padrões`
+### ♻ Restaurar Padrões
+- No painel de configurações, clique em **Restaurar para Padrão**
 
 ---
 
-## 🔧 Configurações
+## 🔧 Configurações Avançadas (`settings.json`)
 
-A extensão permite personalizar algumas opções diretamente no `settings.json`:
+Você também pode personalizar valores via arquivo de configuração do VS Code:
+
 ```json
 {
   "dislexia.focusModeBackground": "rgba(0, 0, 0, 0.7)",
-  "dislexia.font": "Lexend"
+  "dislexia.font": "Lexend",
+  "dislexia.highlightColor": "#ffff00"
 }
 ```
 
@@ -62,12 +76,18 @@ A extensão permite personalizar algumas opções diretamente no `settings.json`
 ## 📚 Tecnologias Utilizadas
 
 - **Node.js**
-- **Visual Studio Code API**
 - **JavaScript**
+- **VS Code Extension API**
+- **WebView para UI personalizada**
+
+---
+
+## 🤝 Contribuindo
+
+Contribuições são muito bem-vindas! Sinta-se à vontade para abrir *issues* ou *pull requests* com melhorias ou sugestões.
 
 ---
 
 ## 📜 Licença
 
-Este projeto está sob a licença MIT. Sinta-se à vontade para contribuir! 🎉
-
+Distribuído sob a licença **MIT**. Veja o arquivo [`LICENSE`](./LICENSE) para mais detalhes.
