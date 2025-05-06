@@ -82,12 +82,6 @@ Você também pode personalizar valores via arquivo de configuração do VS Code
 
 ---
 
-## 🤝 Contribuindo
-
-Contribuições são muito bem-vindas! Sinta-se à vontade para abrir *issues* ou *pull requests* com melhorias ou sugestões.
-
----
-
 ## 📜 Licença
 
 Distribuído sob a licença **MIT**. Veja o arquivo [`LICENSE`](./LICENSE) para mais detalhes.
