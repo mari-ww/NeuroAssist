@@ -64,40 +64,79 @@ function getWebviewContent(variables = []) {
     padding: 8px;
     text-align: left;
   }
+
+  .row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+  }
+
+  .row > div {
+    flex: 1;
+  }
+
+  .button-row {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+  }
+
+  .marking-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
 </style>
 </head>
 <body>
   <h2>⚙️ Configurações Visuais</h2>
 
-  <label for="font">📄 Fonte:</label>
-  <select id="font">
-    <option value="Lexend">Lexend</option>
-    <option value="OpenDyslexic">OpenDyslexic</option>
-  </select>
+ <div class="row">
+  <div>
+    <label for="font">📄 Fonte:</label>
+    <select id="font">...</select>
+  </div>
+  <div>
+    <label for="fontSize">🔡 Tamanho da Fonte:</label>
+    <input type="number" id="fontSize" value="18" min="8" max="32">
+  </div>
+</div>
 
-  <label for="fontSize">🔡 Tamanho da Fonte:</label>
-  <input type="number" id="fontSize" value="18" min="8" max="32">
+<div class="row">
+  <div>
+    <label for="color">🎨 Cor do Texto:</label>
+    <input type="color" id="color">
+  </div>
+  <div>
+    <label for="focusOpacity">🌗 Intensidade do Modo Foco:</label>
+    <input type="range" id="focusOpacity" min="0.1" max="1" step="0.05" value="0.7" oninput="handleOpacityChange(this.value)">
+  </div>
+</div>
 
-  <label for="color">🎨 Cor do Texto:</label>
-  <input type="color" id="color">
+<div class="row">
+  <div>
+    <label for="lineHeight">📏 Espaçamento entre linhas:</label>
+    <input type="number" id="lineHeight" value="1.5" min="1" max="3" step="0.1">
+  </div>
+  <div>
+    <label for="letterSpacing">🔤 Espaçamento entre letras:</label>
+    <input type="number" id="letterSpacing" value="0" min="0" max="10" step="0.5">
+  </div>
+</div>
 
-  <label for="letterSpacing">🔤 Espaçamento entre letras:</label>
-  <input type="number" id="letterSpacing" value="0" min="0" max="10" step="0.5">
+ <div class="button-row">
+    <button onclick="saveSettings()">💾 Salvar Configurações</button>
+    <button onclick="restoreDefaults()">🔄 Restaurar para Padrão</button>
+  </div>
 
-  <label for="lineHeight">📏 Espaçamento entre linhas:</label>
-  <input type="number" id="lineHeight" value="1.5" min="1" max="3" step="0.1">
-
-  <label for="focusOpacity">🌗 Intensidade do Modo Foco:</label>
-  <input type="range" id="focusOpacity" min="0.1" max="1" step="0.05" value="0.7" oninput="handleOpacityChange(this.value)">
-  <span id="opacityValue">0.7</span>
-
-  <button onclick="saveSettings()">💾 Salvar Configurações</button>
-  <button onclick="restoreDefaults()">🔄 Restaurar para Padrão</button>
-
-  <label for="highlightColor">🖍️ Cor da Marcação:</label>
-  <input type="color" id="highlightColor" value="#ffff00">
-  <button onclick="markText()">✍️ Marcar Código</button>
-  <button onclick="clearMarking()">🚫 Limpar Marcação</button>
+  <div class="marking-row">
+    <label for="highlightColor">🖍️ Cor da Marcação:</label>
+    <input type="color" id="highlightColor" value="#ffff00">
+    <button onclick="markText()">Marcar Código</button>
+    <button onclick="clearMarking()">Limpar Marcação</button>
+  </div>
 
   <h2>📋 Variáveis Criadas</h2>
   <table>
