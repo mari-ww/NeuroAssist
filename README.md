@@ -1,6 +1,6 @@
-# 📖 Dislexia Helper — Extensão para VS Code
+# 📖 NeuroAssist — Extensão para VS Code
 
-A **Dislexia Helper** é uma extensão para o Visual Studio Code projetada para tornar o ambiente de programação mais acessível a pessoas com dislexia. Ela permite **personalizações visuais detalhadas**, como escolha de fonte, espaçamento entre letras e linhas, cor do texto e **um modo de foco que melhora a concentração durante a leitura de código**.
+A **NeuroAssistr** é uma extensão para o Visual Studio Code projetada para tornar o ambiente de programação mais acessível a pessoas com neurodivergencia. Ela permite **personalizações visuais detalhadas**, como escolha de fonte, espaçamento entre letras e linhas, cor do texto e **um modo de foco que melhora a concentração durante a leitura de código**.
 
 ---
 
