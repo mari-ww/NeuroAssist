@@ -27,8 +27,8 @@ A **NeuroAssistr** é uma extensão para o Visual Studio Code projetada para tor
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/dislexia-helper.git
-   cd dislexia-helper
+   git clone https://github.com/seu-usuario/NeuroAssist.git
+   cd NeuroAssist
    ```
 
 2. Instale as dependências:
