@@ -1,5 +1,5 @@
 {
-  "name": "Dislexia",
+  "name": "neuroassist",
   "displayName": "Teste",
   "description": "aaa",
   "version": "0.0.1",
@@ -14,30 +14,30 @@
   "contributes": {
     "commands": [
       {
-        "command": "dislexia.showSettingsPanel",
+        "command": "neuroassist.showSettingsPanel",
         "title": "Abrir Configurações Visuais"
       },
       {
-        "command": "dislexia.toggleFocusMode",
+        "command": "neuroassist.toggleFocusMode",
         "title": "Alternar Modo de Leitura Aprimorado"
       },
       {
-        "command": "dislexia.addVariable",
-        "title": "Dislexia: Adicionar Variável"
+        "command": "neuroassist.addVariable",
+        "title": "neuroassist: Adicionar Variável"
       },
       {
-        "command": "dislexia.listVariables",
-        "title": "Dislexia: Listar Variáveis"
+        "command": "neuroassist.listVariables",
+        "title": "neuroassist: Listar Variáveis"
       }
     ],
     "keybindings": [
     {
-      "command": "dislexia.showSettingsPanel",
+      "command": "neuroassist.showSettingsPanel",
       "key": "ctrl+alt+s",
       "when": "editorTextFocus"
     },
     {
-      "command": "dislexia.toggleFocusMode",
+      "command": "neuroassist.toggleFocusMode",
       "key": "ctrl+alt+f",
       "when": "editorTextFocus"
     }
@@ -45,30 +45,30 @@
     "configuration": {
       "type": "object",
       "properties": {
-        "dislexia.focusModeBackground": {
+        "neuroassist.focusModeBackground": {
         "type": "string",
         "default": "rgba(0, 0, 0, 0.7)",
         "description": "Cor do fundo ao ativar o Modo de Leitura Aprimorado."
         },
-        "dislexia.focusModeOpacity": {
+        "neuroassist.focusModeOpacity": {
           "type": "number",
           "default": 0.7,
           "minimum": 0.1,
           "maximum": 1.0,
           "description": "Opacidade do fundo no Modo de Leitura Aprimorado (0.1 = mais claro, 1.0 = totalmente escuro)."
         },
-        "dislexia.font": {
+        "neuroassist.font": {
           "type": "string",
           "default": "Lexend",
           "enum": ["Lexend", "OpenDyslexic"],
           "description": "Fonte utilizada no editor"
         },
-        "dislexia.fontSize": {
+        "neuroassist.fontSize": {
           "type": "number",
           "default": 14,
           "description": "Tamanho da fonte no editor"
         },
-        "dislexia.color": {
+        "neuroassist.color": {
           "type": "string",
           "default": "#000000",
           "description": "Cor do texto no editor"

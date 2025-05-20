@@ -14,13 +14,13 @@ let activeLinesSet = new Set();
  */
 function activate(context) {
   context.subscriptions.push(
-    vscode.commands.registerCommand("dislexia.toggleFocusMode", () => {
+    vscode.commands.registerCommand("neuroassist.toggleFocusMode", () => {
       toggleFocusMode();
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('dislexia.showSettingsPanel', () => {
+    vscode.commands.registerCommand('neuroassist.showSettingsPanel', () => {
       if (settingsPanel) {
         settingsPanel.reveal(vscode.ViewColumn.Two);
         return;
@@ -75,7 +75,7 @@ function activate(context) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('dislexia.addVariable', async () => {
+    vscode.commands.registerCommand('neuroassist.addVariable', async () => {
       const name = await vscode.window.showInputBox({ prompt: 'Nome da variável' });
       const type = await vscode.window.showQuickPick(['string', 'number', 'boolean'], { placeHolder: 'Tipo da variável' });
       const raw = await vscode.window.showInputBox({ prompt: 'Valor inicial' });
@@ -99,7 +99,7 @@ function activate(context) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('dislexia.listVariables', () => {
+    vscode.commands.registerCommand('neuroassist.listVariables', () => {
       const vars = listVariables();
       console.table(vars);
     })
@@ -138,7 +138,7 @@ function updateFocusOpacity(opacity) {
 }
 
 function applyFocusMode(editor) {
-  const config = vscode.workspace.getConfiguration("dislexia");
+  const config = vscode.workspace.getConfiguration("neuroassist");
   const backgroundColor = config.get("focusModeBackground", "rgba(0, 0, 0, 1)");
 
   currentDecoration = vscode.window.createTextEditorDecorationType({
