@@ -28,6 +28,10 @@
       {
         "command": "neuroassist.listVariables",
         "title": "neuroassist: Listar Variáveis"
+      },
+      {
+        "command": "dislexia.openPomodoroTimer",
+        "title": "Abrir Timer Pomodoro"
       }
     ],
     "keybindings": [
