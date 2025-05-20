@@ -253,9 +253,15 @@ npm install axios fast-xml-parser
 
 ## ✅ Badges e Links Úteis
 
+<<<<<<< HEAD
 * **Marketplace**: [neuroassist no VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=YourUsername.neuroassist)
 * **Repositório GitHub**: [https://github.com/SeuUsuario/neuroassist](https://github.com/SeuUsuario/neuroassist)
 * **Issues**: [Área de Issues no GitHub](https://github.com/SeuUsuario/neuroassist/issues)
+=======
+* **Marketplace**: [NeuroAssist no VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=YourUsername.NeuroAssist)
+* **Repositório GitHub**: [https://github.com/SeuUsuario/NeuroAssist](https://github.com/SeuUsuario/NeuroAssist)
+* **Issues**: [Área de Issues no GitHub](https://github.com/SeuUsuario/NeuroAssist/issues)
+>>>>>>> 550a7994d0644d826f7fe70e8cebbd06b341ebbd
 * **Documentação Oficial VS Code API**: [https://code.visualstudio.com/api](https://code.visualstudio.com/api)
 * **Guia de Extensões do VS Code**: [https://code.visualstudio.com/docs/extensions/overview](https://code.visualstudio.com/docs/extensions/overview)
 
@@ -267,4 +273,8 @@ Este projeto está licenciado sob a **Licença MIT**. Veja o arquivo [LICENSE](L
 
 ---
 
+<<<<<<< HEAD
 > Mantenha seu ambiente de desenvolvimento mais acessível e confortável com a neuroassist. Contribuições, sugestões de melhorias e feedbacks são muito bem-vindos! ❤️
+=======
+> Mantenha seu ambiente de desenvolvimento mais acessível e confortável com a NeuroAssist. Contribuições, sugestões de melhorias e feedbacks são muito bem-vindos! ❤️
+>>>>>>> 550a7994d0644d826f7fe70e8cebbd06b341ebbd
