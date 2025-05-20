@@ -1,5 +1,3 @@
-Aqui está a versão corrigida do seu README.md:
-
 **NeuroAssist: Extensão VS Code para Leitura Acessível**
 
 [![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)](https://marketplace.visualstudio.com/items?itemName=mari-ww.neuroassist)
