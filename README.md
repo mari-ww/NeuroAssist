@@ -1,21 +1,21 @@
 **NeuroAssist: Extensão VS Code para Leitura Acessível**
 
-[![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)](https://marketplace.visualstudio.com/items?itemName=YourUsername.Dislexia)
-[![Downloads](https://img.shields.io/visual-studio-marketplace/d/YourUsername.Dislexia)](https://marketplace.visualstudio.com/items?itemName=YourUsername.Dislexia)
+[![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)](https://marketplace.visualstudio.com/items?itemName=YourUsername.NeuroAssist)
+[![Downloads](https://img.shields.io/visual-studio-marketplace/d/YourUsername.NeuroAssist)](https://marketplace.visualstudio.com/items?itemName=YourUsername.NeuroAssist)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ---
 
 ## 📖 Descrição
 
-A **Dislexia** é uma extensão inovadora para o Visual Studio Code, projetada para tornar a leitura e a escrita de código mais confortáveis e acessíveis. Ideal para desenvolvedores que buscam maior clareza visual e personalização, ela oferece:
+O **NeuroAssist** é uma extensão inovadora para o Visual Studio Code, projetada para tornar a leitura e a escrita de código mais confortáveis e acessíveis. Ideal para desenvolvedores que buscam maior clareza visual e personalização, ela oferece:
 
 * **Configurações Visuais**: Ajuste de fonte (incluindo suporte à OpenDyslexic), tamanho de texto, cor do texto, espaçamento entre linhas e letras para reduzir a fadiga ocular.
 * **Modo Foco**: Destaque automático dos trechos de código selecionados, escurecendo o restante do editor para aumentar a concentração.
 * **Marcação Dinâmica**: Ferramenta de marcação de texto que permite destacar partes específicas do código com a cor escolhida.
 * **Gerenciamento de Variáveis via WebView**: Crie, liste e atualize variáveis personalizadas diretamente na interface web da extensão.
 
-Com a Dislexia, você pode transformar seu ambiente de desenvolvimento num espaço mais confortável e adaptado às suas necessidades, especialmente se você busca maior legibilidade ou apresenta dificuldades de leitura.
+Com o NeuroAssist, você pode transformar seu ambiente de desenvolvimento num espaço mais confortável e adaptado às suas necessidades, especialmente se você busca maior legibilidade ou apresenta dificuldades de leitura.
 
 ---
 
@@ -79,14 +79,14 @@ Abaixo está um detalhamento técnico das principais APIs e módulos que fazem a
 
 * **`vscode.window.activeTextEditor`**: Obtém o editor de texto atualmente ativo.
 * **`vscode.window.showInformationMessage(message)`** e **`vscode.window.showWarningMessage(message)`**: Exibição de notificações ao usuário.
-* **`vscode.workspace.getConfiguration(section)`**: Acesso às configurações do VS Code (ex.: `editor`, `workbench`, `dislexia`).
+* **`vscode.workspace.getConfiguration(section)`**: Acesso às configurações do VS Code (ex.: `editor`, `workbench`, `NeuroAssist`).
 * **`configuration.update(key, value, target)`**: Atualiza configurações globais ou de workspace. Usado para alterar `fontFamily`, `fontSize`, `letterSpacing`, `lineHeight` e `colorCustomizations`.
 * **`vscode.window.createTextEditorDecorationType(options)`**: Cria estilos de decoração (ex.: realce de fundo e cor de texto). Utilizado tanto para marcações manuais quanto para o modo foco.
 * **`editor.setDecorations(decorationType, ranges)`**: Aplica decorações às faixas de texto selecionadas.
-* **`vscode.commands.registerCommand(commandId, callback)`**: Registra comandos personalizáveis (`dislexia.showSettingsPanel`, `dislexia.toggleFocusMode`, etc.).
+* **`vscode.commands.registerCommand(commandId, callback)`**: Registra comandos personalizáveis (`NeuroAssist.showSettingsPanel`, `NeuroAssist.toggleFocusMode`, etc.).
 * **`vscode.window.createWebviewPanel(viewType, title, showOptions, options)`**: Cria um painel WebView para exibir a interface HTML de configurações.
 * **`panel.webview.postMessage(message)`** e **`webview.onDidReceiveMessage(callback)`**: Comunicação bidirecional entre a extensão e o WebView.
-* **`vscode.workspace.getConfiguration('dislexia').get('focusModeBackground')`**: Recupera configurações específicas definidas pelo usuário na seção `dislexia` do `settings.json`.
+* **`vscode.workspace.getConfiguration('NeuroAssist').get('focusModeBackground')`**: Recupera configurações específicas definidas pelo usuário na seção `NeuroAssist` do `settings.json`.
 
 ### 2. Node.js API
 
@@ -198,10 +198,10 @@ Abaixo está um detalhamento técnico das principais APIs e módulos que fazem a
 
   * Função `activate(context)` registra comandos:
 
-    1. **`dislexia.toggleFocusMode`**: Chama `toggleFocusMode()`, que alterna entre aplicação e limpeza do modo foco.
-    2. **`dislexia.showSettingsPanel`**: Cria ou revela o painel WebView, carrega HTML via `getWebviewContent(listVariables())` e configura listeners.
-    3. **`dislexia.addVariable`**: Prompts (`showInputBox` e `showQuickPick`) para criar variáveis e atualiza o WebView.
-    4. **`dislexia.listVariables`**: Imprime tabela de variáveis no console para depuração.
+    1. **`neuroassist.toggleFocusMode`**: Chama `toggleFocusMode()`, que alterna entre aplicação e limpeza do modo foco.
+    2. **`neuroassist.showSettingsPanel`**: Cria ou revela o painel WebView, carrega HTML via `getWebviewContent(listVariables())` e configura listeners.
+    3. **`neuroassist.addVariable`**: Prompts (`showInputBox` e `showQuickPick`) para criar variáveis e atualiza o WebView.
+    4. **`neuroassist.listVariables`**: Imprime tabela de variáveis no console para depuração.
   * **`toggleFocusMode()`**:
 
     * Se `focusModeActive` estiver `true`, chama `clearFocusMode()`, caso contrário, `applyFocusMode(editor)`.
@@ -221,16 +221,16 @@ Abaixo está um detalhamento técnico das principais APIs e módulos que fazem a
 
 * **Configuração (`package.json`)**:
 
-  * Comandos: `dislexia.showSettingsPanel`, `dislexia.toggleFocusMode`, `dislexia.addVariable`, `dislexia.listVariables`.
+  * Comandos: `neuroassist.showSettingsPanel`, `neuroassist.toggleFocusMode`, `neuroassist.addVariable`, `neuroassist.listVariables`.
   * **Keybindings**:
 
     * `Ctrl+Alt+S`: Abre painel de configurações.
     * `Ctrl+Alt+F`: Alterna modo foco.
   * **Configurações Padrão** (`contributes.configuration`):
 
-    * `dislexia.focusModeBackground`: Cor de fundo do modo foco.
-    * `dislexia.focusModeOpacity`: Opacidade do modo foco.
-    * `dislexia.font`, `dislexia.fontSize` e `dislexia.color`: Parametrizações iniciais de fonte e cor.
+    * `neuroassist.focusModeBackground`: Cor de fundo do modo foco.
+    * `neuroassist.focusModeOpacity`: Opacidade do modo foco.
+    * `neuroassist.font`, `neuroassist.fontSize` e `neuroassist.color`: Parametrizações iniciais de fonte e cor.
 
 ---
 
@@ -253,9 +253,9 @@ npm install axios fast-xml-parser
 
 ## ✅ Badges e Links Úteis
 
-* **Marketplace**: [Dislexia no VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=YourUsername.Dislexia)
-* **Repositório GitHub**: [https://github.com/SeuUsuario/dislexia](https://github.com/SeuUsuario/dislexia)
-* **Issues**: [Área de Issues no GitHub](https://github.com/SeuUsuario/dislexia/issues)
+* **Marketplace**: [NeuroAssist no VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=YourUsername.NeuroAssist)
+* **Repositório GitHub**: [https://github.com/SeuUsuario/NeuroAssist](https://github.com/SeuUsuario/NeuroAssist)
+* **Issues**: [Área de Issues no GitHub](https://github.com/SeuUsuario/NeuroAssist/issues)
 * **Documentação Oficial VS Code API**: [https://code.visualstudio.com/api](https://code.visualstudio.com/api)
 * **Guia de Extensões do VS Code**: [https://code.visualstudio.com/docs/extensions/overview](https://code.visualstudio.com/docs/extensions/overview)
 
@@ -267,4 +267,4 @@ Este projeto está licenciado sob a **Licença MIT**. Veja o arquivo [LICENSE](L
 
 ---
 
-> Mantenha seu ambiente de desenvolvimento mais acessível e confortável com a Dislexia. Contribuições, sugestões de melhorias e feedbacks são muito bem-vindos! ❤️
+> Mantenha seu ambiente de desenvolvimento mais acessível e confortável com a NeuroAssist. Contribuições, sugestões de melhorias e feedbacks são muito bem-vindos! ❤️
