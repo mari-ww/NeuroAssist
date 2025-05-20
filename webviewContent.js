@@ -25,7 +25,7 @@ function getWebviewContent(variables = []) {
   }
 
   body {
-    font-family: 'Lexend', sans-serif;
+    font-family: 'Lexend', 'OpenDyslexic', 'Comic Sans MS', Verdana, sans-serif;
     padding: 20px;
     background-color: inherit;
     color: inherit;
@@ -39,7 +39,13 @@ function getWebviewContent(variables = []) {
   input, select {
     width: 100%;
     padding: 5px;
-    background-color: white;
+    background-color: var(--vscode-input-background); /* Usa o tema do VS Code */
+    color: var(--vscode-input-foreground); /* Usa a cor do texto do tema */
+    border: 1px solid var(--vscode-input-border);
+  }
+
+  input:focus, select:focus {
+  outline: 2px solid var(--vscode-focusBorder);
   }
 
   button {
@@ -96,7 +102,12 @@ function getWebviewContent(variables = []) {
  <div class="row">
   <div>
     <label for="font">📄 Fonte:</label>
-    <select id="font">...</select>
+    <select id="font">
+      <option value="Lexend">Lexend</option>
+      <option value="OpenDyslexic">OpenDyslexic</option>
+      <option value="Comic Sans MS">Comic Sans MS</option>
+      <option value="Verdana">Verdana</option>
+    </select>
   </div>
   <div>
     <label for="fontSize">🔡 Tamanho da Fonte:</label>
