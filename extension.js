@@ -3,6 +3,7 @@ let settingsPanel = null;
 const { listVariables, addVariable } = require('./variableManager');
 const { getWebviewContent } = require('./webviewContent');
 const { saveSettings, restoreDefaultSettings, markText, clearMarking } = require('./editorActions');
+const { distance } = require('fastest-levenshtein');
 
 let currentDecoration = null;
 let focusDecoration = null;
@@ -75,20 +76,34 @@ function activate(context) {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand('neuroassist.listVariables', () => {
+      const vars = listVariables();
+      console.table(vars);
+    })
+  );
+
+  context.subscriptions.push(
     vscode.commands.registerCommand('neuroassist.addVariable', async () => {
       const name = await vscode.window.showInputBox({ prompt: 'Nome da variável' });
+      if (!name) return;
+  
+      // Verificação de similaridade
+      checkSimilarVariable(name);
+  
       const type = await vscode.window.showQuickPick(['string', 'number', 'boolean'], { placeHolder: 'Tipo da variável' });
+      if (!type) return;
+  
       const raw = await vscode.window.showInputBox({ prompt: 'Valor inicial' });
+      if (raw === undefined) return;
+  
       let value = raw;
       if (type === 'number') value = Number(raw);
       else if (type === 'boolean') value = raw === 'true';
-
+  
       try {
         addVariable(name, type, value);
         vscode.window.showInformationMessage(`Variável "${name}" adicionada!`);
-
         const variables = listVariables();
-
         if (settingsPanel) {
           settingsPanel.webview.postMessage({ command: 'updateVariables', variables });
         }
@@ -97,20 +112,22 @@ function activate(context) {
       }
     })
   );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand('neuroassist.listVariables', () => {
-      const vars = listVariables();
-      console.table(vars);
-    })
-  );
-
   context.subscriptions.push(
     vscode.commands.registerCommand('dislexia.openPomodoroTimer', () => {
       openPomodoroTimer(context);
     })
   );
   
+}
+function checkSimilarVariable(newVarName) {
+  const variables = listVariables();
+  for (const variable of variables) {
+    const existingName = variable.name;
+    const dist = distance(newVarName, existingName);
+    if (dist <= 2 && newVarName.length >= 4) { // Ajuste de distância conforme desejado
+      vscode.window.showWarningMessage(`A variável "${newVarName}" é parecida com "${existingName}". Você quis dizer "${existingName}"?`);
+    }
+  }
 }
 
 function deactivate() {}
