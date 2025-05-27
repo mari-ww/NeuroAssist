@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pomodoro Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #1e1e1e;
+      color: white;
+      text-align: center;
+    }
+    input, select, button {
+      font-size: 1.1em;
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 5px;
+      border: none;
+    }
+    input, select {
+      width: 200px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    button {
+      cursor: pointer;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin: 5px 10px;
+    }
+    button:hover {
+      background-color: #005f9e;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+      max-height: 150px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      border: 1px solid #444;
+      border-radius: 5px;
+    }
+    ul li {
+      padding: 6px 10px;
+      border-bottom: 1px solid #333;
+      text-align: left;
+      cursor: pointer;
+    }
+    ul li.active {
+      background-color: #333;
+    }
+    #timer {
+      font-size: 5em;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pomodoro Timer</h1>
+  
+  <label for="taskName">Nome da tarefa:</label>
+  <input type="text" id="taskName" placeholder="Digite o nome da tarefa" />
+  
+  <label for="taskTime">Tempo (minutos):</label>
+  <select id="taskTime">
+    <option value="15">15</option>
+    <option value="25" selected>25</option>
+    <option value="50">50</option>
+  </select>
+  
+  <button id="addTask">Adicionar tarefa</button>
+  
+  <h3>Lista de tarefas</h3>
+  <ul id="taskList"></ul>
+  
+  <div id="timer">00:00</div>
+  
+  <button id="start">Iniciar</button>
+  <button id="pause">Pausar</button>
+  <button id="reset">Resetar</button>
+
+  <script>
+    let tasks = [];
+    let selectedTaskIndex = null;
+    let timerInterval = null;
+    let isRunning = false;
+
+    const taskNameInput = document.getElementById('taskName');
+    const taskTimeSelect = document.getElementById('taskTime');
+    const taskListUl = document.getElementById('taskList');
+    const timerEl = document.getElementById('timer');
+    const startBtn = document.getElementById('start');
+    const pauseBtn = document.getElementById('pause');
+    const resetBtn = document.getElementById('reset');
+    const addTaskBtn = document.getElementById('addTask');
+
+    function updateTimerDisplay(seconds) {
+      const min = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const sec = (seconds % 60).toString().padStart(2, '0');
+      timerEl.textContent = `${min}:${sec}`;
+    }
+
+    function updateTaskList() {
+      taskListUl.innerHTML = '';
+      tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${task.name} - ${Math.floor(task.remaining / 60)}m`;
+        if (index === selectedTaskIndex) li.classList.add('active');
+        li.onclick = () => {
+          pauseTimer();
+          selectedTaskIndex = index;
+          updateTimerDisplay(task.remaining);
+          updateTaskList();
+        };
+        taskListUl.appendChild(li);
+      });
+    }
+
+    function startTimer() {
+      if (selectedTaskIndex === null || isRunning) return;
+      isRunning = true;
+      timerInterval = setInterval(() => {
+        let task = tasks[selectedTaskIndex];
+        if (task.remaining > 0) {
+          task.remaining--;
+          updateTimerDisplay(task.remaining);
+        } else {
+          clearInterval(timerInterval);
+          isRunning = false;
+          alert(`Tempo da tarefa "${task.name}" esgotado!`);
+        }
+        updateTaskList();
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      isRunning = false;
+    }
+
+    function resetTimer() {
+      if (selectedTaskIndex === null) return;
+      pauseTimer();
+      tasks[selectedTaskIndex].remaining = tasks[selectedTaskIndex].time * 60;
+      updateTimerDisplay(tasks[selectedTaskIndex].remaining);
+      updateTaskList();
+    }
+
+    addTaskBtn.onclick = () => {
+      const taskName = taskNameInput.value.trim();
+      const taskTime = parseInt(taskTimeSelect.value, 10);
+      if (!taskName) return;
+
+      tasks.push({ name: taskName, time: taskTime, remaining: taskTime * 60 });
+      taskNameInput.value = '';
+      taskTimeSelect.value = '25';
+      updateTaskList();
+
+      if (selectedTaskIndex === null) {
+        selectedTaskIndex = tasks.length - 1;
+        updateTimerDisplay(tasks[selectedTaskIndex].remaining);
+      }
+    };
+
+    startBtn.onclick = startTimer;
+    pauseBtn.onclick = pauseTimer;
+    resetBtn.onclick = resetTimer;
+  </script>
+</body>
+</html>
