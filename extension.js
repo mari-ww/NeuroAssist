@@ -41,7 +41,17 @@ function activate(context) {
       );
 
       const variables = listVariables();
-      settingsPanel.webview.html = getWebviewContent(variables);
+      const config = vscode.workspace.getConfiguration('neuroassist');
+      const savedSettings = {
+        font: config.get('font', 'Lexend'),
+        fontSize: config.get('fontSize', 18),
+        color: config.get('color', '#000000'),
+        letterSpacing: config.get('letterSpacing', 0),
+        lineHeight: config.get('lineHeight', 1.5),
+        focusOpacity: config.get('focusModeOpacity', 0.7)
+      };
+
+      settingsPanel.webview.html = getWebviewContent(variables, savedSettings);
 
       const themeKind = vscode.window.activeColorTheme.kind;
       settingsPanel.webview.postMessage({ command: "setTheme", theme: themeKind });
@@ -50,7 +60,14 @@ function activate(context) {
         (message) => {
           switch (message.command) {
             case 'saveSettings':
-              saveSettings(message.font, message.fontSize, message.color, message.letterSpacing, message.lineHeight);
+              saveSettings(
+                message.font, 
+                message.fontSize, 
+                message.color, 
+                message.letterSpacing, 
+                message.lineHeight,
+                message.focusOpacity
+              );
               vscode.window.showInformationMessage(
                 `Configurações salvas: Fonte - ${message.font}, Tamanho - ${message.fontSize}, Cor - ${message.color}`
               );
@@ -128,7 +145,7 @@ function checkSimilarVariable(newVarName) {
   for (const variable of variables) {
     const existingName = variable.name;
     const dist = distance(newVarName, existingName);
-    if (dist <= 2 && newVarName.length >= 4) { // Ajuste de distância conforme desejado
+    if (dist <= 2 && newVarName.length >= 4) {
       vscode.window.showWarningMessage(`A variável "${newVarName}" é parecida com "${existingName}". Você quis dizer "${existingName}"?`);
     }
   }
@@ -153,21 +170,27 @@ function updateFocusOpacity(opacity) {
 
   focusDecoration.dispose();
 
+  // Atualiza configuração global
+  const config = vscode.workspace.getConfiguration('neuroassist');
+  config.update('focusModeOpacity', opacity, vscode.ConfigurationTarget.Global);
+
+  // Recria a decoração com nova opacidade
   focusDecoration = vscode.window.createTextEditorDecorationType({
     backgroundColor: `rgba(0, 0, 0, ${opacity})`,
     color: 'black',
     isWholeLine: true,
   });
 
+  // Aplica imediatamente se o modo foco estiver ativo
   const editor = vscode.window.activeTextEditor;
-  if (editor) {
+  if (editor && focusModeActive) {
     updateFocus(editor);
   }
 }
 
 function applyFocusMode(editor) {
   const config = vscode.workspace.getConfiguration("neuroassist");
-  const backgroundColor = config.get("focusModeBackground", "rgba(0, 0, 0, 1)");
+  const opacity = config.get("focusModeOpacity", 0.7);
 
   currentDecoration = vscode.window.createTextEditorDecorationType({
     backgroundColor: 'transparent',
@@ -175,11 +198,14 @@ function applyFocusMode(editor) {
   });
 
   focusDecoration = vscode.window.createTextEditorDecorationType({
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: `rgba(0, 0, 0, ${opacity})`,
     color: 'black',
     isWholeLine: true,
   });
 
+  // Limpa linhas ativas anteriores
+  activeLinesSet.clear();
+  
   updateFocus(editor);
   vscode.window.onDidChangeTextEditorSelection(() => updateFocus(editor));
 }
@@ -189,6 +215,9 @@ function updateFocus(editor) {
 
   const totalLines = editor.document.lineCount;
   const selections = editor.selections;
+
+  // Limpa set antes de adicionar novas linhas
+  activeLinesSet.clear();
 
   for (const sel of selections) {
     for (let i = sel.start.line; i <= sel.end.line; i++) {
@@ -217,6 +246,14 @@ function clearFocusMode() {
     focusDecoration.dispose();
     focusDecoration = null;
   }
+  
+  if (currentDecoration) {
+    currentDecoration.dispose();
+    currentDecoration = null;
+  }
+  
+  activeLinesSet.clear();
+  focusModeActive = false;
 }
 
 

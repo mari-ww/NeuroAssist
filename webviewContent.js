@@ -1,4 +1,17 @@
-function getWebviewContent(variables = []) {
+function getWebviewContent(variables = [], settings = {}) {
+  // Configurações padrão
+  const defaultSettings = {
+    font: 'Lexend',
+    fontSize: 18,
+    color: '#000000',
+    letterSpacing: 0,
+    lineHeight: 1.5,
+    focusOpacity: 0.7
+  };
+
+  // Mescla as configurações salvas com as padrão
+  const currentSettings = { ...defaultSettings, ...settings };
+
   const variableRows = variables.map(v => `
     <tr>
       <td>${v.name}</td>
@@ -39,8 +52,8 @@ function getWebviewContent(variables = []) {
   input, select {
     width: 100%;
     padding: 5px;
-    background-color: var(--vscode-input-background); /* Usa o tema do VS Code */
-    color: var(--vscode-input-foreground); /* Usa a cor do texto do tema */
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
     border: 1px solid var(--vscode-input-border);
   }
 
@@ -103,37 +116,37 @@ function getWebviewContent(variables = []) {
   <div>
     <label for="font">📄 Fonte:</label>
     <select id="font">
-      <option value="Lexend">Lexend</option>
-      <option value="OpenDyslexic">OpenDyslexic</option>
-      <option value="Comic Sans MS">Comic Sans MS</option>
-      <option value="Verdana">Verdana</option>
+      <option value="Lexend" ${currentSettings.font === 'Lexend' ? 'selected' : ''}>Lexend</option>
+      <option value="OpenDyslexic" ${currentSettings.font === 'OpenDyslexic' ? 'selected' : ''}>OpenDyslexic</option>
+      <option value="Comic Sans MS" ${currentSettings.font === 'Comic Sans MS' ? 'selected' : ''}>Comic Sans MS</option>
+      <option value="Verdana" ${currentSettings.font === 'Verdana' ? 'selected' : ''}>Verdana</option>
     </select>
   </div>
   <div>
     <label for="fontSize">🔡 Tamanho da Fonte:</label>
-    <input type="number" id="fontSize" value="18" min="8" max="32">
+    <input type="number" id="fontSize" value="${currentSettings.fontSize}" min="8" max="32">
   </div>
 </div>
 
 <div class="row">
   <div>
     <label for="color">🎨 Cor do Texto:</label>
-    <input type="color" id="color">
+    <input type="color" id="color" value="${currentSettings.color}">
   </div>
   <div>
-    <label for="focusOpacity">🌗 Intensidade do Modo Foco:</label>
-    <input type="range" id="focusOpacity" min="0.1" max="1" step="0.05" value="0.7" oninput="handleOpacityChange(this.value)">
+    <label for="focusOpacity">🌗 Intensidade do Modo Foco: <span id="opacityValue">${currentSettings.focusOpacity}</span></label>
+    <input type="range" id="focusOpacity" min="0.1" max="1" step="0.05" value="${currentSettings.focusOpacity}" oninput="handleOpacityChange(this.value)">
   </div>
 </div>
 
 <div class="row">
   <div>
     <label for="lineHeight">📏 Espaçamento entre linhas:</label>
-    <input type="number" id="lineHeight" value="1.5" min="1" max="3" step="0.1">
+    <input type="number" id="lineHeight" value="${currentSettings.lineHeight}" min="1" max="3" step="0.1">
   </div>
   <div>
     <label for="letterSpacing">🔤 Espaçamento entre letras:</label>
-    <input type="number" id="letterSpacing" value="0" min="0" max="10" step="0.5">
+    <input type="number" id="letterSpacing" value="${currentSettings.letterSpacing}" min="0" max="10" step="0.5">
   </div>
 </div>
 
@@ -183,15 +196,9 @@ function getWebviewContent(variables = []) {
       const font = document.getElementById('font').value;
       const fontSize = document.getElementById('fontSize').value;
       const color = document.getElementById('color').value;
-      const letterSpacing = document.getElementById('letterSpacing').value + 'px';
+      const letterSpacing = document.getElementById('letterSpacing').value;
       const lineHeight = document.getElementById('lineHeight').value;
       const focusOpacity = document.getElementById('focusOpacity').value;
-
-      document.body.style.fontFamily = font;
-      document.body.style.fontSize = fontSize + 'px';
-      document.body.style.color = color;
-      document.body.style.letterSpacing = letterSpacing;
-      document.body.style.lineHeight = lineHeight;
 
       vscode.postMessage({
         command: 'saveSettings',
