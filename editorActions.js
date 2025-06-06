@@ -38,25 +38,26 @@ function saveSettings(font, fontSize, color, letterSpacing, lineHeight) {
       );
     }
   }  
-
-function markText(color = '#ffff00') {
-  const editor = vscode.window.activeTextEditor;
-  if (editor) {
-    const selection = editor.selection;
-    if (selection.isEmpty) {
-      vscode.window.showInformationMessage("Por favor, selecione um trecho de código.");
-      return;
+  function markText(color = '#ffff00') {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+      const selection = editor.selection;
+      if (selection.isEmpty) {
+        vscode.window.showInformationMessage("Por favor, selecione um trecho de código.");
+        return;
+      }
+  
+      const decorationType = createMarkingDecoration(color);
+      editor.setDecorations(decorationType, [selection]);
+      currentDecorations.push(decorationType);
+  
+      vscode.window.showInformationMessage("Texto marcado.");
+    } else {
+      vscode.window.showWarningMessage("Nenhum editor ativo encontrado.");
     }
- }
-    
-
-    const decorationType = createMarkingDecoration(color);
-    editor.setDecorations(decorationType, [selection]);
-    currentDecorations.push(decorationType);
-
-    vscode.window.showInformationMessage("Texto marcado.");
   }
   
+
   function clearMarking() {
     const editor = vscode.window.activeTextEditor;
     if (editor) {
@@ -75,51 +76,29 @@ function createMarkingDecoration(color) {
     isWholeLine: false,
   });
 }
-
 function restoreDefaultSettings(panel) {
-    const configuration = vscode.workspace.getConfiguration('editor');
-    const userOS = os.platform();
-    let defaultFont = 'monospace';
-  
-    if (userOS === 'win32') {
-      defaultFont = 'Consolas';
-    } else if (userOS === 'darwin') {
-      defaultFont = 'Monaco';
-    } else if (userOS === 'linux') {
-      defaultFont = 'Ubuntu Mono';
-    }
-  
-    configuration.update('fontFamily', defaultFont, vscode.ConfigurationTarget.Global);
-    configuration.update('fontSize', 18, vscode.ConfigurationTarget.Global);
-    configuration.update('letterSpacing', 0, vscode.ConfigurationTarget.Global);
-    configuration.update('lineHeight', 1.5, vscode.ConfigurationTarget.Global);
-  
-    // Detectando o tema do VS Code
-    const theme = vscode.workspace.getConfiguration('workbench').get('colorTheme');
-    let defaultColor = undefined; // Se undefined, o VS Code usa a cor padrão do tema
-  
-    if (theme && theme.toLowerCase().includes('dark')) {
-      defaultColor = '#ffffff'; // Letras brancas para temas escuros
-    }
-  
-    const userSettings = vscode.workspace.getConfiguration('workbench');
-    const editorColorSettings = {
-      "colorCustomizations": {
-        "editor.foreground": defaultColor
-      }
-    };
-  
-    userSettings.update('colorCustomizations', editorColorSettings.colorCustomizations, vscode.ConfigurationTarget.Global);
-  
-    // Envia os valores padrão de volta para o WebView
-    panel.webview.postMessage({
-      command: 'restoreDefaults',
-      font: defaultFont,
-      fontSize: 18,
-      color: defaultColor,
-      letterSpacing: 0,
-      lineHeight: 1.5
-    });
-  }  
+  const configuration = vscode.workspace.getConfiguration('editor');
+  const userSettings = vscode.workspace.getConfiguration('workbench');
 
+  // Remover personalizações de editor
+  configuration.update('fontFamily', undefined, vscode.ConfigurationTarget.Global);
+  configuration.update('fontSize', undefined, vscode.ConfigurationTarget.Global);
+  configuration.update('letterSpacing', undefined, vscode.ConfigurationTarget.Global);
+  configuration.update('lineHeight', undefined, vscode.ConfigurationTarget.Global);
+
+  // Remover personalizações de cor
+  userSettings.update('colorCustomizations', undefined, vscode.ConfigurationTarget.Global);
+
+  // Envia os valores padrão de volta para o WebView (informativo)
+  panel.webview.postMessage({
+      command: 'restoreDefaults',
+      font: undefined,
+      fontSize: undefined,
+      color: undefined,
+      letterSpacing: undefined,
+      lineHeight: undefined
+  });
+
+  vscode.window.showInformationMessage("As configurações foram restauradas para os valores padrão do VS Code.");
+}
 module.exports = { saveSettings, markText, clearMarking, restoreDefaultSettings };
