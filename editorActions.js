@@ -34,7 +34,7 @@ function saveSettings(font, fontSize, color, letterSpacing, lineHeight) {
   function checkFontAvailability(font) {
     if (font === "OpenDyslexic") {
       vscode.window.showWarningMessage(
-        "A fonte OpenDyslexic pode não estar instalada no seu sistema. Caso não funcione, baixe e instale pelo site: https://opendyslexic.org/"
+        "A fonte openDyslexic pode não estar instalada no seu sistema. Caso não funcione, baixe e instale pelo site: https://opendyslexic.org/"
       );
     }
   }  

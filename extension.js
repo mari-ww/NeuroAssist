@@ -98,8 +98,8 @@ function activate(context) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand('neuroassist.listVariables', () => {
-      const vars = listVariables();
-      console.table(vars);
+      const vari = listVariables();
+      console.table(vari);
     })
   );
 
