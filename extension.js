@@ -13,11 +13,21 @@ let currentDecoration = null;
 let focusDecoration = null;
 let focusModeActive = false;
 let activeLinesSet = new Set();
+let currentTheme = vscode.window.activeColorTheme.kind;
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
+  vscode.window.onDidChangeActiveColorTheme(theme => {
+  currentTheme = theme.kind;
+  if (settingsPanel) {
+    settingsPanel.webview.postMessage({
+      command: 'setTheme',
+      theme: currentTheme
+    });
+  }
+});
   context.subscriptions.push(
     vscode.commands.registerCommand("neuroassist.toggleFocusMode", () => {
       toggleFocusMode();
@@ -51,7 +61,7 @@ function activate(context) {
         focusOpacity: config.get('focusModeOpacity', 0.7)
       };
 
-      settingsPanel.webview.html = getWebviewContent(variables, savedSettings);
+      settingsPanel.webview.html = getWebviewContent(variables, savedSettings, focusModeActive);
 
       const themeKind = vscode.window.activeColorTheme.kind;
       settingsPanel.webview.postMessage({ command: "setTheme", theme: themeKind });
@@ -83,6 +93,9 @@ function activate(context) {
               break;
             case 'updateFocusOpacity':
               updateFocusOpacity(message.focusOpacity);
+              break;
+            case 'toggleFocusMode':
+              toggleFocusMode();
               break;
           }
         },
@@ -133,11 +146,6 @@ function activate(context) {
       }
     })
   );
-  context.subscriptions.push(
-    vscode.commands.registerCommand('dislexia.openPomodoroTimer', () => {
-      openPomodoroTimer(context);
-    })
-  );
   
 }
 function checkSimilarVariable(newVarName) {
@@ -163,6 +171,14 @@ function toggleFocusMode() {
     applyFocusMode(editor);
   }
   focusModeActive = !focusModeActive;
+
+  // Atualizar o webview se estiver aberto
+  if (settingsPanel) {
+    settingsPanel.webview.postMessage({
+      command: 'updateFocusMode',
+      active: focusModeActive
+    });
+  }
 }
 
 function updateFocusOpacity(opacity) {
@@ -255,38 +271,6 @@ function clearFocusMode() {
   activeLinesSet.clear();
   focusModeActive = false;
 }
-
-
-let pomodoroPanel = null;
-
-function openPomodoroTimer(context) {
-  if (pomodoroPanel) {
-    pomodoroPanel.reveal(vscode.ViewColumn.Two);
-    return;
-  }
-
-  pomodoroPanel = vscode.window.createWebviewPanel(
-    'pomodoroTimer',
-    'Timer Pomodoro',
-    vscode.ViewColumn.Two,
-    {
-      enableScripts: true,
-      retainContextWhenHidden: true,
-    }
-  );
-
-  pomodoroPanel.webview.html = getPomodoroHtml(context);
-
-
-  pomodoroPanel.onDidDispose(() => {
-    pomodoroPanel = null;
-  });
-}
-function getPomodoroHtml(context) {
-  const filePath = path.join(context.extensionPath, 'pomodoro.html');
-  return fs.readFileSync(filePath, 'utf8');
-}
-
 
 module.exports = {
   activate,

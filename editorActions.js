@@ -3,7 +3,7 @@ const os = require('os');
 
 let currentDecorations = [];
 
-function saveSettings(font, fontSize, color, letterSpacing, lineHeight) {
+function saveSettings(font, fontSize, color, letterSpacing, lineHeight, dyslexicMode = false) {
     const configuration = vscode.workspace.getConfiguration('editor');
   
     // Verifica se a fonte está instalada antes de aplicar
@@ -28,6 +28,10 @@ function saveSettings(font, fontSize, color, letterSpacing, lineHeight) {
     };
   
     userSettings.update('colorCustomizations', editorColorSettings.colorCustomizations, vscode.ConfigurationTarget.Global);
+  
+    // Salvar configuração do modo disléxico
+    const neuroAssistConfig = vscode.workspace.getConfiguration('neuroassist');
+    neuroAssistConfig.update('dyslexicMode', dyslexicMode, vscode.ConfigurationTarget.Global);
   }
   
   // Função para verificar se a fonte está instalada

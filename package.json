@@ -15,35 +15,35 @@
     "commands": [
       {
         "command": "neuroassist.showSettingsPanel",
-        "title": "Abrir Configurações Visuais"
+        "title": "Mostrar Configurações do NeuroAssist",
+        "category": "NeuroAssist"
       },
       {
         "command": "neuroassist.toggleFocusMode",
-        "title": "Alternar Modo de Leitura Aprimorado"
-      },
-      {
-        "command": "neuroassist.addVariable",
-        "title": "neuroassist: Adicionar Variável"
+        "title": "Alternar Modo Foco",
+        "category": "NeuroAssist"
       },
       {
         "command": "neuroassist.listVariables",
-        "title": "neuroassist: Listar Variáveis"
+        "title": "Listar Variáveis",
+        "category": "NeuroAssist"
       },
       {
-        "command": "dislexia.openPomodoroTimer",
-        "title": "Abrir Timer Pomodoro"
+        "command": "neuroassist.addVariable",
+        "title": "Adicionar Variável",
+        "category": "NeuroAssist"
       }
     ],
     "keybindings": [
       {
-        "command": "neuroassist.showSettingsPanel",
-        "key": "ctrl+alt+s",
-        "when": "editorTextFocus"
-      },
-      {
         "command": "neuroassist.toggleFocusMode",
         "key": "ctrl+alt+f",
-        "when": "editorTextFocus"
+        "mac": "cmd+alt+f"
+      },
+      {
+        "command": "neuroassist.showSettingsPanel",
+        "key": "ctrl+alt+s",
+        "mac": "cmd+alt+s"
       }
     ],
     "configuration": {
