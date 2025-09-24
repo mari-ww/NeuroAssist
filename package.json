@@ -9,6 +9,12 @@
   "categories": [
     "Other"
   ],
+  
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mari-ww/NeuroAssist.git"
+  },
+
   "activationEvents": [],
   "main": "./extension.js",
   "contributes": {
