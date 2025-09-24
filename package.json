@@ -2,7 +2,8 @@
   "name": "neuroassist",
   "displayName": "Teste",
   "description": "aaa",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "publisher": "mariWW",  
   "engines": {
     "vscode": "^1.97.0"
   },
