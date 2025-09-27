@@ -312,6 +312,29 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
             background: rgba(40, 167, 69, 0.1);
         }
 
+        .marking-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .marking-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .marking-controls label {
+            margin-bottom: 0;
+            white-space: nowrap;
+        }
+
+        .marking-controls input[type="color"] {
+            width: 60px;
+            height: 40px;
+        }
+
         .preview-title {
             font-size: 16px;
             font-weight: 600;
@@ -365,6 +388,20 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
             gap: 10px;
         }
 
+        .pomodoro-config {
+            margin-bottom: 15px;
+        }
+
+        .pomodoro-config label {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .pomodoro-config input {
+            width: 80px;
+            display: inline-block;
+        }
+
         .btn {
             padding: 10px 18px;
             border: none;
@@ -409,6 +446,20 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
             border-radius: 3px;
         }
 
+        .opacity-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .opacity-value {
+            font-size: 14px;
+            color: var(--text-light);
+            min-width: 50px;
+            text-align: right;
+        }
+
         @media (max-width: 768px) {
             .content {
                 grid-template-columns: 1fr;
@@ -417,6 +468,11 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
             .settings-panel {
                 border-right: none;
                 border-bottom: 1px solid var(--border);
+            }
+            
+            .marking-controls {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -462,6 +518,17 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
                     <input type="color" id="textColor" class="color-picker" value="${currentSettings.color}">
                 </div>
 
+                <!-- SLIDER DE OPACIDADE DO MODO FOCO (ADICIONADO DE VOLTA) -->
+                <div class="form-group">
+                    <div class="opacity-display">
+                        <label for="focusOpacity">Intensidade do Modo Foco:</label>
+                        <span class="opacity-value" id="focusOpacityValue">${Math.round(currentSettings.focusOpacity * 100)}%</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="focusOpacity" min="10" max="100" value="${Math.round(currentSettings.focusOpacity * 100)}">
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label for="lineHeight">Espaçamento entre linhas</label>
                     <div class="slider-container">
@@ -493,12 +560,29 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
                     <button class="btn-action" id="restoreDefaultsBtn">
                         <span>↩️</span> Restaurar Padrão
                     </button>
-                    <button class="btn-action btn-danger" id="clearMarkingBtn">
-                        <span>🗑️</span> Limpar Marcação
+                    <button class="btn-action btn-success" id="activateFocusModeBtn" ${focusModeActive ? 'disabled' : ''}>
+                        <span>🎯</span> Ativar Modo Foco
                     </button>
-                    <button class="btn-action" id="focusModeBtn">
-                        <span>🎯</span> ${focusModeActive ? 'Desativar Modo Foco' : 'Modo Foco'}
+                    <button class="btn-action btn-danger" id="deactivateFocusModeBtn" ${!focusModeActive ? 'disabled' : ''}>
+                        <span>🚫</span> Desativar Modo Foco
                     </button>
+                </div>
+
+                <div class="marking-section">
+                    <div class="section-title">
+                        <span class="section-icon">🖍️</span>
+                        Marcação de Código
+                    </div>
+                    <div class="marking-controls">
+                        <label for="highlightColor">Cor da Marcação:</label>
+                        <input type="color" id="highlightColor" value="#ffff00">
+                        <button class="btn-action" id="markTextBtn">
+                            <span>🖍️</span> Marcar Código
+                        </button>
+                        <button class="btn-action btn-danger" id="clearMarkingBtn">
+                            <span>🗑️</span> Limpar Marcação
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -521,6 +605,12 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
                         <span class="section-icon">⏱️</span>
                         Técnica Pomodoro
                     </div>
+
+                    <div class="pomodoro-config">
+                        <label for="pomodoroDuration">Duração (minutos):</label>
+                        <input type="number" id="pomodoroDuration" min="1" max="60" value="25">
+                    </div>
+
                     <div class="pomodoro-display" id="pomodoroTimer">25:00</div>
                     <div class="pomodoro-controls">
                         <button class="btn btn-primary" id="startPomodoro">Iniciar</button>
@@ -540,7 +630,85 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
         document.body.setAttribute('data-theme', savedTheme);
         document.getElementById('themeToggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
 
-        // Controles de interface
+        // Variáveis do Pomodoro
+        let pomodoroInterval;
+        let pomodoroTime = 25 * 60;
+        let isPomodoroRunning = false;
+        let audioUnlocked = false;
+
+        // Função para criar o áudio
+        function createAlarmSound() {
+            const alarmSound = new Audio();
+            alarmSound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3';
+            alarmSound.preload = 'auto';
+            alarmSound.volume = 0.7;
+            return alarmSound;
+        }
+
+        let alarmSound = createAlarmSound();
+
+        // Função para liberar o áudio
+        function unlockAudio() {
+            if (!audioUnlocked) {
+                alarmSound.play().then(() => {
+                    alarmSound.pause();
+                    alarmSound.currentTime = 0;
+                    audioUnlocked = true;
+                }).catch(error => {
+                    console.log('Erro ao liberar áudio:', error);
+                });
+            }
+        }
+
+        // Liberar áudio na primeira interação
+        document.addEventListener('click', function() {
+            unlockAudio();
+        }, { once: true });
+
+        // Função para tocar o alarme 6 vezes
+        function playAlarmSound() {
+            if (!audioUnlocked) {
+                unlockAudio();
+                setTimeout(playAlarmSound, 1000);
+                return;
+            }
+
+            let playCount = 0;
+            const maxPlays = 6;
+            
+            function playBeep() {
+                if (playCount < maxPlays) {
+                    const beepSound = new Audio();
+                    beepSound.src = alarmSound.src;
+                    beepSound.volume = 0.7;
+                    
+                    beepSound.play().then(() => {
+                        playCount++;
+                        setTimeout(playBeep, beepSound.duration * 1000 + 300);
+                    }).catch(error => {
+                        console.log('Erro ao tocar beep:', error);
+                        playCount++;
+                        setTimeout(playBeep, 500);
+                    });
+                }
+            }
+            
+            playBeep();
+        }
+
+        // SLIDER DE OPACIDADE DO MODO FOCO (ADICIONADO DE VOLTA)
+        document.getElementById('focusOpacity').addEventListener('input', function() {
+            const opacityValue = this.value;
+            document.getElementById('focusOpacityValue').textContent = opacityValue + '%';
+            
+            // Enviar para a extensão
+            vscode.postMessage({
+                command: 'updateFocusOpacity',
+                focusOpacity: opacityValue / 100
+            });
+        });
+
+        // Controles de interface existentes
         document.getElementById('fontSize').addEventListener('input', function() {
             document.getElementById('fontSizeValue').textContent = this.value + 'px';
             document.getElementById('codePreview').style.fontSize = this.value + 'px';
@@ -585,7 +753,6 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
             document.body.setAttribute('data-theme', newTheme);
             themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
             
-            // Salvar preferência
             localStorage.setItem('theme', newTheme);
         });
 
@@ -597,6 +764,7 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
             const letterSpacing = document.getElementById('letterSpacing').value;
             const lineHeight = document.getElementById('lineHeight').value;
             const dyslexicMode = document.getElementById('dyslexicMode').checked;
+            const focusOpacity = document.getElementById('focusOpacity').value / 100;
 
             vscode.postMessage({
                 command: 'saveSettings',
@@ -605,7 +773,8 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
                 color,
                 letterSpacing,
                 lineHeight,
-                dyslexicMode
+                dyslexicMode,
+                focusOpacity
             });
         });
 
@@ -613,19 +782,27 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
             vscode.postMessage({ command: 'restoreDefaults' });
         });
 
+        document.getElementById('markTextBtn').addEventListener('click', function() {
+            const highlightColor = document.getElementById('highlightColor').value;
+            vscode.postMessage({ 
+                command: 'markText', 
+                highlightColor: highlightColor 
+            });
+        });
+
         document.getElementById('clearMarkingBtn').addEventListener('click', function() {
             vscode.postMessage({ command: 'clearMarking' });
         });
 
-        document.getElementById('focusModeBtn').addEventListener('click', function() {
-            vscode.postMessage({ command: 'toggleFocusMode' });
+        document.getElementById('activateFocusModeBtn').addEventListener('click', function() {
+            vscode.postMessage({ command: 'activateFocusMode' });
         });
 
-        // Simulação do Pomodoro
-        let pomodoroInterval;
-        let pomodoroTime = 25 * 60;
-        let isPomodoroRunning = false;
+        document.getElementById('deactivateFocusModeBtn').addEventListener('click', function() {
+            vscode.postMessage({ command: 'deactivateFocusMode' });
+        });
 
+        // Funções do Pomodoro
         function updatePomodoroDisplay() {
             const minutes = Math.floor(pomodoroTime / 60);
             const seconds = pomodoroTime % 60;
@@ -633,8 +810,18 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
                 \`\${minutes.toString().padStart(2, '0')}:\${seconds.toString().padStart(2, '0')}\`;
         }
 
-        document.getElementById('startPomodoro').addEventListener('click', function() {
+        document.getElementById('pomodoroDuration').addEventListener('change', function() {
             if (!isPomodoroRunning) {
+                pomodoroTime = parseInt(this.value) * 60;
+                updatePomodoroDisplay();
+            }
+        });
+
+        document.getElementById('startPomodoro').addEventListener('click', function() {
+            unlockAudio();
+            
+            if (!isPomodoroRunning) {
+                pomodoroTime = parseInt(document.getElementById('pomodoroDuration').value) * 60;
                 isPomodoroRunning = true;
                 pomodoroInterval = setInterval(function() {
                     if (pomodoroTime > 0) {
@@ -643,6 +830,7 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
                     } else {
                         clearInterval(pomodoroInterval);
                         isPomodoroRunning = false;
+                        playAlarmSound();
                         vscode.postMessage({
                             command: 'showInformationMessage',
                             text: 'Tempo do Pomodoro acabou! Hora de uma pausa.'
@@ -660,7 +848,7 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
         document.getElementById('resetPomodoro').addEventListener('click', function() {
             clearInterval(pomodoroInterval);
             isPomodoroRunning = false;
-            pomodoroTime = 25 * 60;
+            pomodoroTime = parseInt(document.getElementById('pomodoroDuration').value) * 60;
             updatePomodoroDisplay();
         });
 
@@ -672,10 +860,18 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
             const message = event.data;
             switch (message.command) {
                 case 'updateFocusMode':
-                    const focusModeBtn = document.getElementById('focusModeBtn');
-                    focusModeBtn.innerHTML = message.active ? 
-                        '<span>🎯</span> Desativar Modo Foco' : 
-                        '<span>🎯</span> Modo Foco';
+                    const activateBtn = document.getElementById('activateFocusModeBtn');
+                    const deactivateBtn = document.getElementById('deactivateFocusModeBtn');
+                    
+                    if (activateBtn && deactivateBtn) {
+                        if (message.active) {
+                            activateBtn.disabled = true;
+                            deactivateBtn.disabled = false;
+                        } else {
+                            activateBtn.disabled = false;
+                            deactivateBtn.disabled = true;
+                        }
+                    }
                     break;
                 case 'setTheme':
                     document.body.setAttribute('data-theme', message.theme === 2 || message.theme === 3 ? 'dark' : 'light');

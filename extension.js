@@ -28,10 +28,17 @@ function activate(context) {
     });
   }
 });
+
   context.subscriptions.push(
-    vscode.commands.registerCommand("neuroassist.toggleFocusMode", () => {
-      toggleFocusMode();
-    })
+      vscode.commands.registerCommand("neuroassist.activateFocusMode", () => {
+          activateFocusMode();
+      })
+  );
+
+  context.subscriptions.push(
+      vscode.commands.registerCommand("neuroassist.deactivateFocusMode", () => {
+          deactivateFocusMode();
+      })
   );
 
   context.subscriptions.push(
@@ -94,9 +101,12 @@ function activate(context) {
             case 'updateFocusOpacity':
               updateFocusOpacity(message.focusOpacity);
               break;
-            case 'toggleFocusMode':
-              toggleFocusMode();
-              break;
+            case 'activateFocusMode':
+                activateFocusMode();
+                break;
+            case 'deactivateFocusMode':
+                deactivateFocusMode();
+                break;
           }
         },
         undefined,
@@ -161,24 +171,49 @@ function checkSimilarVariable(newVarName) {
 
 function deactivate() {}
 
+function activateFocusMode() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    if (!focusModeActive) {
+        applyFocusMode(editor);
+        focusModeActive = true;
+        
+        // Atualizar o webview se estiver aberto
+        if (settingsPanel) {
+            settingsPanel.webview.postMessage({
+                command: 'updateFocusMode',
+                active: true
+            });
+        }
+        
+        vscode.window.showInformationMessage('Modo Foco ativado!');
+    }
+}
+
+function deactivateFocusMode() {
+    if (focusModeActive) {
+        clearFocusMode();
+        focusModeActive = false;
+        
+        // Atualizar o webview se estiver aberto
+        if (settingsPanel) {
+            settingsPanel.webview.postMessage({
+                command: 'updateFocusMode',
+                active: false
+            });
+        }
+        
+        vscode.window.showInformationMessage('Modo Foco desativado!');
+    }
+}
+
 function toggleFocusMode() {
-  const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
-
-  if (focusModeActive) {
-    clearFocusMode();
-  } else {
-    applyFocusMode(editor);
-  }
-  focusModeActive = !focusModeActive;
-
-  // Atualizar o webview se estiver aberto
-  if (settingsPanel) {
-    settingsPanel.webview.postMessage({
-      command: 'updateFocusMode',
-      active: focusModeActive
-    });
-  }
+    if (focusModeActive) {
+        deactivateFocusMode();
+    } else {
+        activateFocusMode();
+    }
 }
 
 function updateFocusOpacity(opacity) {
