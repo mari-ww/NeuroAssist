@@ -54,8 +54,15 @@ function activate(context) {
         vscode.ViewColumn.Two,
         {
           enableScripts: true,
+          localResourceRoots: [
+            vscode.Uri.file(path.join(context.extensionPath, 'pomodoro beep'))
+          ]
         }
       );
+
+      // Obter URI do arquivo de som
+      const beepSoundPath = path.join(context.extensionPath, 'pomodoro beep', 'beep.mp3');
+      const beepSoundUri = settingsPanel.webview.asWebviewUri(vscode.Uri.file(beepSoundPath));
 
       const variables = listVariables();
       const config = vscode.workspace.getConfiguration('neuroassist');
@@ -68,8 +75,8 @@ function activate(context) {
         focusOpacity: config.get('focusModeOpacity', 0.7)
       };
 
-      settingsPanel.webview.html = getWebviewContent(variables, savedSettings, focusModeActive);
-
+      settingsPanel.webview.html = getWebviewContent(variables, savedSettings, focusModeActive, beepSoundUri.toString());
+      
       const themeKind = vscode.window.activeColorTheme.kind;
       settingsPanel.webview.postMessage({ command: "setTheme", theme: themeKind });
 

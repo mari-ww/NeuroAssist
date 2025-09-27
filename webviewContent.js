@@ -1,4 +1,4 @@
-function getWebviewContent(variables = [], settings = {}, focusModeActive = false) {
+function getWebviewContent(variables = [], settings = {}, focusModeActive = false, beepSoundUri = '') {
   // Configurações padrão
   const defaultSettings = {
     font: 'Lexend',
@@ -636,10 +636,12 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
         let isPomodoroRunning = false;
         let audioUnlocked = false;
 
-        // Função para criar o áudio
+        // Usar o som local fornecido pela extensão
+        const beepSoundUri = '${beepSoundUri}';
+
+        // Função para criar o áudio local
         function createAlarmSound() {
-            const alarmSound = new Audio();
-            alarmSound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3';
+            const alarmSound = new Audio(beepSoundUri);
             alarmSound.preload = 'auto';
             alarmSound.volume = 0.7;
             return alarmSound;
@@ -650,14 +652,26 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
         // Função para liberar o áudio
         function unlockAudio() {
             if (!audioUnlocked) {
+                // Tocar e pausar rapidamente para "liberar" o áudio
                 alarmSound.play().then(() => {
                     alarmSound.pause();
                     alarmSound.currentTime = 0;
                     audioUnlocked = true;
                 }).catch(error => {
                     console.log('Erro ao liberar áudio:', error);
+                    // Tentar criar um áudio fallback se o local falhar
+                    fallbackAudio();
                 });
             }
+        }
+
+        // Áudio de fallback caso o arquivo local não carregue
+        function fallbackAudio() {
+            alarmSound = new Audio();
+            alarmSound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3';
+            alarmSound.preload = 'auto';
+            alarmSound.volume = 0.7;
+            audioUnlocked = true;
         }
 
         // Liberar áudio na primeira interação
@@ -668,28 +682,36 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
         // Função para tocar o alarme 6 vezes
         function playAlarmSound() {
             if (!audioUnlocked) {
+                console.log('Áudio não liberado, tentando liberar...');
                 unlockAudio();
-                setTimeout(playAlarmSound, 1000);
+                setTimeout(() => playAlarmSound(), 1000);
                 return;
             }
 
             let playCount = 0;
-            const maxPlays = 6;
+            const maxPlays = 4;
             
             function playBeep() {
                 if (playCount < maxPlays) {
-                    const beepSound = new Audio();
-                    beepSound.src = alarmSound.src;
-                    beepSound.volume = 0.7;
+                    console.log('Tocando beep', playCount + 1);
                     
-                    beepSound.play().then(() => {
+                    // Usar o mesmo objeto de áudio mas resetar o tempo
+                    alarmSound.currentTime = 0;
+                    
+                    alarmSound.play().then(() => {
                         playCount++;
-                        setTimeout(playBeep, beepSound.duration * 1000 + 300);
+                        console.log('Beep tocado com sucesso');
+                        
+                        // Esperar o áudio terminar + 300ms antes do próximo
+                        setTimeout(playBeep, (alarmSound.duration * 300) + 100);
                     }).catch(error => {
                         console.log('Erro ao tocar beep:', error);
                         playCount++;
+                        // Fallback: continuar mesmo com erro
                         setTimeout(playBeep, 500);
                     });
+                } else {
+                    console.log('Alarme finalizado');
                 }
             }
             
@@ -830,6 +852,7 @@ function getWebviewContent(variables = [], settings = {}, focusModeActive = fals
                     } else {
                         clearInterval(pomodoroInterval);
                         isPomodoroRunning = false;
+                        console.log('Pomodoro finalizado, tocando alarme...');
                         playAlarmSound();
                         vscode.postMessage({
                             command: 'showInformationMessage',
